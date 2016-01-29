@@ -32,10 +32,9 @@
  * If the string contains spaces then it must be surrounded by double quotations
  * : ' " '.
  * The key as well as the string characters must be 7 bit ASCII. The only
- * working range is: [a-z,A-Z]. Characters not included in this range are
- * guaranteed to work or they will be ignored. The space character (ASCII 32)
- * for example will not be translated along with the working range characters.
- * It will just stay there.
+ * working range is: [a-z,A-Z]. Characters included in this range are
+ * guaranteed to work. The space character (ASCII 32) for example will not be
+ * translated along with the working range characters. It will just stay there.
  * The key has another condition: it must not contain spaces.
  */
 
@@ -46,8 +45,6 @@
 int main (int argc, char **argv)
 {
 
-	checkArgc (3, &argc, 5);
-
 	/*
 	 * Input: switch
 	 *		-a = try all alphabets
@@ -56,8 +53,7 @@ int main (int argc, char **argv)
 	 *		-h = help
 	 *		-k = key, used by -c and -d
      *      -v = decipher a vigenere input text.
-	 * 	  string
-	 *
+     *
 	 */
 
 	parseArgs (&argc, argv);
@@ -69,7 +65,7 @@ int main (int argc, char **argv)
 void parseArgs (int *argc, char **argv)
 {
 
-    int c, needsToCallWork = 0;
+    int c, keySet = 0;
     char *key = NULL;
     extern char *optarg;
     extern int optind, opterr, optopt;
@@ -79,21 +75,22 @@ void parseArgs (int *argc, char **argv)
     /* Input argument parsing.  */
     while ((c = getopt (*argc, (char * const *) argv, optionsString)) != -1)
     {
+
         switch (c)
         {
 			case 'a':
-				checkArgc (3, argc, 3);
+				checkArgc ('a', argc, 3);
 				crackCaesar (optarg);
 				break;
 
 			case 'c':
-				checkArgc ('l', argc, 5);
-				needsToCallWork = callWork ('c', optarg, key);
+				checkArgc (keySet, argc, 5);
+				callWork ('c', optarg, key);
 				break;
 
 			case 'd':
-				checkArgc ('l', argc, 5);
-				needsToCallWork = callWork ('d', optarg, key);
+				checkArgc (keySet, argc, 5);
+				callWork ('d', optarg, key);
 				break;
 
 			case 'h':
@@ -101,71 +98,65 @@ void parseArgs (int *argc, char **argv)
 				break;
 
 			case 'k':
-				checkArgc ('l', argc, 5);
+                keySet = 1;
+				checkArgc (keySet, argc, 5);
 				key = strdup (optarg);
-				/* Check for return.  */
+                if (key == NULL)
+                    exit (EXIT_FAILURE);
+
+                /* If the key is empty, then return error.  */
+                if (strncmp (key, "", 2) == 0)
+                    helpAndExit ();
+
 				break;
 
             case 'v':
                 fprintf (stderr, "Unimplemented\n");
                 exit (EXIT_FAILURE);
                 break;
-			default:
-				help ();
-				exit (EXIT_FAILURE);
-				break;
 
+			default:
+                helpAndExit ();
+				break;
 		}
 	}
 
-	/* If -k switch is entered before -c or -d switch:  */
-	if (needsToCallWork == 1)
-		work (argv[1][1], argv[2], argv[4]);
+    /* If no argument has been given, exit with help.  */
+    if (optind == 1)
+        helpAndExit ();
 
 }
 
-void checkArgc (char action, int *argc, int numElts)
+void checkArgc (int keySet, int *argc, int numElts)
 {
 
-	if (action == 'l') /* less than */
-	{
-		if (*argc < numElts)
-		{
-			help ();
-			exit (EXIT_FAILURE);
-		}
-	}
-	else if (action == 'g') /* greater than */
-	{
-		if (*argc > numElts)
-		{
-			help ();
-			exit (EXIT_FAILURE);
-		}
-	}
-	else
-	{
-		/* action is used as another numElts */
-		if (*argc < (int) action || *argc > numElts)
-		{
-			help ();
-			exit (EXIT_FAILURE);
-		}
-	}
+	if (*argc != numElts)
+        helpAndExit ();
+    if (keySet != 1 && keySet != 'a')
+        helpAndExit ();
 
 }
 
-/* print help function */
+void helpAndExit (void)
+{
+
+    fprintf (stderr, "\n");
+    help ();
+    exit (EXIT_FAILURE);
+
+}
+
+/* Print the help function.  */
 void help (void)
 {
 
-	fprintf (stdout,
+	fprintf (stderr,
 "Usage: %s {OPTION1} [OPTION2]\n"
 "An ANSI C, fast and efficient implementation of Caesar and Vigenere cipher.\n"
 "\n"
 "Only one or two options are permitted.\n"
-"\t{-a,-v} \"INPUT STRING\"\n"
-"\t-k KEY {-c,-d} \"INPUT STRING\"\n"
+"\tfcvc {-a,-v} \"INPUT STRING\"\n"
+"\tfcvc -k KEY {-c,-d} \"INPUT STRING\"\n"
 "\n"
 "\t-a\tTry all 26 alphabets for the INPUT STRING.\n"
 "\t-c\tEncipher INPUT STRING.\n"
@@ -174,7 +165,7 @@ void help (void)
 "\t-k\tUse KEY to encipher or decipher INPUT STRING.\n"
 "\t-v\tDecipher Vigenere INPUT STRING.\n"
 "\n", PRG_NAME);
-    fprintf (stdout,
+    fprintf (stderr,
 "Exit value:\n"
 "\t0\tno error occurred,\n"
 "\t!= 0\tsome error occurred.\n"
@@ -183,7 +174,7 @@ void help (void)
 "Full documentation at: <https://github.com/frnmst/%s>\n"
 "or available locally via: %s -h\n"
 "\n", REPO_NAME, PRG_NAME);
-    fprintf (stdout,
+    fprintf (stderr,
 "%s  Copyright © 2016  frnmst (Franco Masotti)\n"
 "This program comes with ABSOLUTELY NO WARRANTY; for details see\n"
 "'LICENSE' file or <https://www.gnu.org/licenses/gpl-3.0.en.html>\n"
@@ -230,14 +221,9 @@ void crackCaesar (char *inputString)
 int callWork (char action, char *str, char *key)
 {
 
-	if (key != NULL)
-	{
-		work (action, str, key);
-		free (key);
-		return 0;
-	}
-	else
-		return 1;
+    work (action, str, key);
+    free (key);
+    return 0;
 
 }
 
@@ -300,6 +286,10 @@ LETTER_OFFSET);
 LETTER_OFFSET);
         }
     }
+
+    /* If the key has an invalid character, output is unkown.  */
+    if (isalpha (*alphabet) == 0)
+        *letter = '?';
 
     return letter;
 

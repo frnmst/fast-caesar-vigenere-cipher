@@ -63,8 +63,9 @@
 /* Added to adhere to ANSI standard to avoid using getopt.h */
 extern int getopt (int, char * const *, const char *);
 void parseArgs (int *argc, char **argv);
+void helpAndExit (void);
 void help (void);
-void checkArgc (char action, int *argc, int numElts);
+void checkArgc (int keySet, int *argc, int numElts);
 void crackCaesar (char *inputString);
 int callWork (char action, char *str, char *key);
 void work (char action, char *str, char *key);

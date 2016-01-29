@@ -13,8 +13,8 @@ Usage: fcvc {OPTION1} [OPTION2]
 An ANSI C, fast and efficient implementation of Caesar and Vigenere cipher.
 
 Only one or two options are permitted.
-        {-a,-v} "INPUT STRING"
-        -k KEY {-c,-d} "INPUT STRING"
+        fcvc {-a,-v} "INPUT STRING"
+        fcvc -k KEY {-c,-d} "INPUT STRING"
 
         -a      Try all 26 alphabets for the INPUT STRING.
         -c      Encipher INPUT STRING.
@@ -38,6 +38,11 @@ This is free software, and you are welcome to redistribute it
 under certain conditions; see 'LICENSE' file or
 <https://www.gnu.org/licenses/gpl-3.0.en.html> for details.
 ```
+
+## Explanation
+Since Vigenère's cipher is a general case of Caesar cipher they can be 
+implemented in the same function.
+
 
 # License
 ![https://www.gnu.org/graphics/gplv3-127x51.png](https://www.gnu.org/graphics/gplv3-127x51.png)
