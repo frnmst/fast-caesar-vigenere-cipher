@@ -85,12 +85,14 @@ void parseArgs (int *argc, char **argv)
 
 			case 'c':
 				checkArgc (keySet, argc, 5);
-				callWork ('c', optarg, key);
+				work ('c', optarg, key);
+                free (key);
 				break;
 
 			case 'd':
 				checkArgc (keySet, argc, 5);
-				callWork ('d', optarg, key);
+				work ('d', optarg, key);
+                free (key);
 				break;
 
 			case 'h':
@@ -103,11 +105,6 @@ void parseArgs (int *argc, char **argv)
 				key = strdup (optarg);
                 if (key == NULL)
                     exit (EXIT_FAILURE);
-
-                /* If the key is empty, then return error.  */
-                if (strncmp (key, "", 2) == 0)
-                    helpAndExit ();
-
 				break;
 
             case 'v':
@@ -218,40 +215,77 @@ void crackCaesar (char *inputString)
 
 }
 
-int callWork (char action, char *str, char *key)
-{
-
-    work (action, str, key);
-    free (key);
-    return 0;
-
-}
-
 void work (char action, char *str, char *key)
 {
 
-	int i = 0, j = 0;
-	int keyLen = strlen (key); /* strlen calulates string length each time it's called.
-				    * Assigning strlen (key) to a variable is much more
-				    * efficient than using strlen inside the while loop. */
+	int i = 0, j = 0, keyLen = strlen (key), strLen = strlen (str);
+    int setBreak = 0, keyIsNotAlpha = 0;
+/* strlen calulates string length each time it's called.
+ * Assigning strlen (key) to a variable is much more
+ * efficient than using strlen inside the while loop. */
 
 
-	while (str[i] != '\0')
+    while (i < strLen)
+    {
+		str[i] = toupper (str[i]);
+        i++;
+    }
+    while (j < keyLen)
+    {
+		key[j] = toupper (key[j]);
+
+        if (isalpha (key[j]) == 0)
+            keyIsNotAlpha ++;
+
+        j++;
+    }
+
+    /* If key has no valid character, set 'A' as default key. This way the
+input string is not modified.  */
+    if (keyIsNotAlpha == j)
+    {
+        key [0] = 'A';
+        key [1] = '\0';
+    }
+
+    i = 0;
+    j = 0;
+
+	while (i < strLen)
 	{
-		str[i] = toupper (str[i]); /* original text upper case */
-		key[j] = toupper (key[j]); /* key upper case */
+        /* Key loop.  */
+		if (j == keyLen)
+			j = 0;
 
-		fprintf (stdout, "%c", *(transform (&action, &str[i], &key[j]))); /* print the transformed char */
+        /* Non alphabetical characters of the key are ignored.  */
+        while (isalpha (key[j]) == 0 && j < keyLen)
+        {
+            j++;
+    		if (j == keyLen)
+	    		j = 0;
+        }
+
+        /* Non alphabetical characters of the string are ignored and printed
+as is.  */
+        while (isalpha (str[i]) == 0 && i < strLen)
+        {
+            fprintf (stdout, "%c", str[i]);
+            i++;
+            if (i >= strLen)
+                setBreak = 1;
+        }
+
+        /* Avoid string overflow if the lasr character is not in the isalpha
+range.  */
+        if (setBreak == 1)
+            break;
+
+        /* Print the transformed char.  */
+		fprintf (stdout, "%c", *(transform (&action, &str[i], &key[j])));
 
 		i++;
 		j++;
 
-		if (j == keyLen) /* Key loop.  */
-			j = 0;
-
-        /* Go back 1 in key pointer if str[i] !(>= 'A' || <= 'Z').  */
-		if (isalpha (str[i]) == 0)
-			j--;
 	}
 
 	fprintf (stdout, "\n");
@@ -268,28 +302,19 @@ char *transform (char *action, char *letter, char *alphabet)
     int offset;
 
 
-     /* If it's a letter between 'A' and 'Z'  */
-    if (isalpha (*letter) != 0)
+    if (*action == 'c')
+        *letter = (((*letter + *alphabet) % (ALPHABET_NUMS)) + LETTER_OFFSET);
+    else
     {
-        if (*action == 'c')
-            *letter = (((*letter + *alphabet) % (ALPHABET_NUMS)) + 
-LETTER_OFFSET);
-		else
-		{
-            /* This avoids overflow.  */
-			if (*letter - *alphabet < 0)
-				offset = 26;
-			else
-				offset = 0;
+        /* This avoids overflow.  */
+        if (*letter - *alphabet < 0)
+            offset = 26;
+        else
+            offset = 0;
 
-            *letter = (((*letter - *alphabet + offset) % (ALPHABET_NUMS)) + 
+        *letter = (((*letter - *alphabet + offset) % (ALPHABET_NUMS)) + 
 LETTER_OFFSET);
-        }
     }
-
-    /* If the key has an invalid character, output is unkown.  */
-    if (isalpha (*alphabet) == 0)
-        *letter = '?';
 
     return letter;
 

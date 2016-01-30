@@ -67,7 +67,6 @@ void helpAndExit (void);
 void help (void);
 void checkArgc (int keySet, int *argc, int numElts);
 void crackCaesar (char *inputString);
-int callWork (char action, char *str, char *key);
 void work (char action, char *str, char *key);
 char *transform (char *action, char *letter, char *alphabet);
 
