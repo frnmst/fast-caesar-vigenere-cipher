@@ -43,6 +43,21 @@ under certain conditions; see 'LICENSE' file or
 Since Vigenère's cipher is a general case of Caesar cipher they can be 
 implemented in the same function.
 
+## Examples
+Simon Singh has written an excellent intoductory book about cryptography 
+called "The Code Book". At the end of his book and on his 
+[website](http://simonsingh.net/cryptography/cryptograms/)
+there are Caesar shift cryptograms examples you can test like this:
+```
+$ ./fcvc -a "EXAMPLE CRYPTOGRAM"
+```
+where `EXAMPLE CRYPTOGRAM` is a string that can contain non-alphabetical 
+characters. This will crack the cryptogram by iterating through all the 
+possible 26 alphabets.
+
+A Vigenère cracker will also be available in the future through the `-v` 
+option. Cracking Vigenère's cipher, however, requires much more effort, design 
+and research than Caesar's cipher.
 
 # License
 ![https://www.gnu.org/graphics/gplv3-127x51.png](https://www.gnu.org/graphics/gplv3-127x51.png)
