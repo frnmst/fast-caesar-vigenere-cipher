@@ -41,9 +41,20 @@ under certain conditions; see 'LICENSE' file or
 ```
 
 ## Explanation
-![Tabula Recta](https://upload.wikimedia.org/wikipedia/commons/9/9a/Vigen%C3%A8re_square_shading.svg =640x640)
+<img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Vigen%C3%A8re_square_shading.svg" alt="Tabula recta" width=200 height=200>
+
 Since Vigenère's cipher is a general case of Caesar cipher they can be 
-implemented in the same function.
+implemented in the same function. 
+
+Each row of the table represents one of the possible enciphering 
+alphabets, and each column the value of the input string 
+transformed in the corresponding alphabet.
+
+In the case of Caesar cipher the user select an alphabet for the whole 
+input string, while in the case of Vigenère the alphabet (row) changes 
+for each letter of the input string. This set of chosen alphabets is 
+known as the key. If the length of key is less than the length of the 
+input string then the key is wrapped to the beginning.
 
 ## Examples
 Simon Singh has written an excellent intoductory book about cryptography 
