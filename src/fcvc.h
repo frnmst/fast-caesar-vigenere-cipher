@@ -67,6 +67,10 @@ void helpAndExit (void);
 void help (void);
 void checkArgc (int keySet, int *argc, int numElts);
 void crackCaesar (char *inputString);
+void crackvigenere (char *inputString);
+void prepareStrings (char action, char *str, char *key);
+void toUpper (char *str, char *key, int *keyIsNotAlpha);
+void setDefaultKey (char *key, int *keyIsNotAlpha);
 void work (char action, char *str, char *key);
 char *transform (char *action, char *letter, char *alphabet);
 

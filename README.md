@@ -3,9 +3,10 @@ fast-caesar-vigenere-cipher
 An ANSI C, fast and efficient implementation of Caesar and Vigenère cipher.
 
 ## Compile
-To compile please use run `$ ./compile.sh` instead of using the Makefile. 
+To compile please use run `$ cd src && ./compile.sh` instead of using the 
+Makefile. 
 
-This will create an executable called `fcvc` in the current directory.
+This will create an executable called `fcvc` in the `src` directory.
 
 ## Help
 ```
@@ -40,6 +41,7 @@ under certain conditions; see 'LICENSE' file or
 ```
 
 ## Explanation
+![Tabula Recta](https://upload.wikimedia.org/wikipedia/commons/9/9a/Vigen%C3%A8re_square_shading.svg =640x640)
 Since Vigenère's cipher is a general case of Caesar cipher they can be 
 implemented in the same function.
 
