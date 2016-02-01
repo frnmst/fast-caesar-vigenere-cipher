@@ -115,6 +115,7 @@ void parseArgs (int *argc, char **argv)
 
             case 'v':
                 fprintf (stderr, "Unimplemented\n");
+                crackVigenere (optarg);
                 exit (EXIT_FAILURE);
                 break;
 

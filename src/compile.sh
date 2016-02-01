@@ -28,5 +28,9 @@
 # -march=native = compiled only for that particular arch
 # ANSI standard (C90)
 # -D_DEFAULT_SOURCE are compiler headers that make possible to use -ansi
-gcc fcvc.c core.c utils.c monoalphaModules/* -Wall -Wextra -Wpedantic -Werror \
--march=native -O0 -std=c90 -D_DEFAULT_SOURCE -o fcvc
+paths="fcvc.c core.c utils.c monoalphaModules/* polyalphaModules/*"
+outFile="fcvc"
+
+gcc $paths \
+-Wall -Wextra -Wpedantic -Werror \
+-march=native -O0 -std=c90 -D_DEFAULT_SOURCE -o "$outFile"
