@@ -76,7 +76,8 @@ char *transform (char *action, char *letter, char *alphabet);
 
 /* Polyalphabes prototypes.  */
 void findSpacings (char *str, int *dist);
+int reallocSpacingArray (int *spacings, int len);
+
 int compareIntegers (const void *a, const void *b);
 int orderArray (int *dist, int len);
-void copyInNewArray (int *dist, int *spacings, int spacingsArraySize);
 

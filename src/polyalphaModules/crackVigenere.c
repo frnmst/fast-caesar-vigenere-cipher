@@ -31,24 +31,20 @@
 
 void crackVigenere (char *str)
 {
-    int *dist = NULL, i, spacingsArraySize;
-    int *spacings;
+    int strLen = strlen (str), spacingsArraySize;
+    int *spacings = NULL;
+    int i;
 
 
-    dist = (int *) malloc (strlen (str)* sizeof (int));
-    if (dist == NULL)
+    /* Transform input string in an alpha(toupper(string)).  */
+    /*TODO.  */
+
+    /* Using calloc is like setting all the array to zero.  */
+    if ((spacings = (int *) calloc (strLen, strLen * sizeof (int))) == NULL)
         exit (EXIT_FAILURE);
 
-    findSpacings (str, dist);
-    spacingsArraySize = orderArray (dist, strlen (str));
-
-    spacings = (int *) malloc (strlen (str)* sizeof (int));
-    if (spacings == NULL)
-        exit (EXIT_FAILURE);
-
-    copyInNewArray (dist, spacings, spacingsArraySize);
-
-    free (dist);
+    findSpacings (str, spacings);
+    spacingsArraySize = reallocSpacingArray (spacings, strLen);
 
     /* Print spacings.  */
     i = 0;

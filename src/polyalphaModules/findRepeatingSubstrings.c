@@ -29,9 +29,12 @@
 #endif
 
 
-/* Comments TODO.  */
+/* Comments TODO better.  */
 
-void findSpacings (char *str, int *dist)
+/* Function that finds the distances between at least copies repeating
+ * consecutive characters in the input string str. The result is saved into
+ * the integer array string.  */
+void findSpacings (char *str, int *spacings)
 {
 
     /* Positional string.  */
@@ -51,7 +54,7 @@ void findSpacings (char *str, int *dist)
         ip = substrOff - 1;
         while (j <= strLen && str [i + ip] == str [j])
         {
-            dist [k] = abs (j - (i + ip));
+            spacings [k] = abs (j - (i + ip));
             k++;
             j++;
             ip++;
@@ -65,41 +68,27 @@ void findSpacings (char *str, int *dist)
 
 }
 
-
-int compareIntegers (const void *a, const void *b)
+/* Since the array spacings is as long as the str and we know it will not be
+ * entirely used, it must be reallocated both to avoid zeros in that array, and
+ * also to free space.  */
+int reallocSpacingArray (int *spacings, int len)
 {
 
-  const int *da = (const int *) a;
-  const int *db = (const int *) b;
+    int i = 0, spacingArraySize = 0, *tmp = NULL;
 
-  return (*da > *db) - (*da < *db);
+
+    /* Ignore zeros in the array (since spacings cannot be equal to zero).  */
+    for (i = 0; i < len; i++)
+        if (spacings [i] != 0)
+            spacingArraySize ++;
+
+    /* Safe realloc using a temporary pointer.  */
+    if ((tmp = (int *) realloc (spacings, sizeof (int) * spacingArraySize)) == NULL)
+        exit (EXIT_FAILURE);
+    else
+        spacings = tmp;
+
+    return spacingArraySize;
 
 }
 
-
-int orderArray (int *dist, int len)
-{
-
-    int i = 0, distArraySize = 0;
-
-
-    while (i < len)
-    {
-        if (dist [i] != 0)
-            distArraySize ++;
-        i++;
-    }
-
-    qsort (dist, distArraySize, sizeof (int), compareIntegers);
-
-    return distArraySize;
-
-}
-
-void copyInNewArray (int *dist, int *spacings, int spacingsArraySize)
-{
-    int i = 0;
-
-    for (i = 0; i < spacingsArraySize; i++)
-        spacings[i] = dist[i];
-}
