@@ -25,7 +25,7 @@
 /* Main header.  */
 #ifndef M_FCVC_H
 #define M_FCVC_H
-    #include "fcvc.h"
+#include "fcvc.h"
 #endif
 
 
@@ -35,7 +35,7 @@ void setDefaultKey (char *key, int *keyIsNotAlpha)
 {
 
     /* If key has no valid character, set 'A' as default key. This way the
-input string is not modified.  */
+     *  input string is not modified.  */
     if (*keyIsNotAlpha == (int) strlen (key))
     {
         key [0] = 'A';
@@ -49,9 +49,6 @@ void work (char action, char *str, char *key)
 
     int i = 0, j = 0, keyLen = strlen (key), strLen = strlen (str);
     int setBreak = 0;
-/* strlen calulates string length each time it's called.
- * Assigning strlen (key) to a variable is much more
- * efficient than using strlen inside the while loop. */
 
 
     while (i < strLen)
@@ -78,13 +75,13 @@ as is.  */
                 setBreak = 1;
         }
 
-        /* Avoid string overflow if the lasr character is not in the isalpha
+        /* Avoid string overflow if the last character is not in the isalpha
 range.  */
         if (setBreak == 1)
             break;
 
         /* Print the transformed char.  */
-        fprintf (stdout, "%c", *(transform (&action, &str[i], &key[j])));
+        fprintf (stdout, "%c", *(transform (action, &str[i], &key[j])));
 
         i++;
         j++;
@@ -99,25 +96,15 @@ range.  */
  * cipher 'c'
  * decipher 'd'
  */
-char *transform (char *action, char *letter, char *alphabet)
+char *transform (char action, char *letter, char *alphabet)
 {
 
-    register unsigned short int offset;
-
-
-    if (*action == 'c')
-        *letter = (((*letter + *alphabet) % (ALPHABET_NUMS)) + LETTER_OFFSET);
+    if (action == 'c')
+     *letter = ((*letter + *alphabet) % ALPHABET_NUMS) + LETTER_OFFSET;
+    /* Adding ALPHABET_NUMS keeps the mod operation > 0, so it is well
+     * defined.  */
     else
-    {
-        /* This avoids overflow.  */
-        if (*letter - *alphabet < 0)
-            offset = 26;
-        else
-            offset = 0;
-
-        *letter = (((*letter - *alphabet + offset) % (ALPHABET_NUMS)) + 
-LETTER_OFFSET);
-    }
+     *letter = ((*letter - *alphabet + ALPHABET_NUMS) % ALPHABET_NUMS) + LETTER_OFFSET;
 
     return letter;
 

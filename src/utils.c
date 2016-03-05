@@ -48,45 +48,6 @@ void helpAndExit (void)
 
 }
 
-/* Print the help function.  */
-void help (void)
-{
-
-    fprintf (stderr,
-"Usage: %s {OPTION1} [OPTION2]\n"
-"An ANSI C, fast and efficient implementation of Caesar and Vigenere cipher.\n"
-"\n"
-"Only one or two options are permitted.\n"
-"\tfcvc {-a,-v} \"INPUT STRING\"\n"
-"\tfcvc -k KEY {-c,-d} \"INPUT STRING\"\n"
-"\n"
-"\t-a\tTry all 26 alphabets for the INPUT STRING.\n"
-"\t-c\tEncipher INPUT STRING.\n"
-"\t-d\tDecipher INPUT STRING.\n"
-"\t-h\tPrint this help.\n"
-"\t-k\tUse KEY to encipher or decipher INPUT STRING.\n"
-"\t-v\tDecipher Vigenere INPUT STRING.\n"
-"\n", PRG_NAME);
-    fprintf (stderr,
-"Exit value:\n"
-"\t0\tno error occurred,\n"
-"\t!= 0\tsome error occurred.\n"
-"\n"
-"Report bugs to: franco.masotti@student.unife.it or franco.masotti@live.com\n"
-"Full documentation at: <https://github.com/frnmst/%s>\n"
-"or available locally via: %s -h\n"
-"\n", REPO_NAME, PRG_NAME);
-    fprintf (stderr,
-"%s  Copyright © 2016  frnmst (Franco Masotti)\n"
-"This program comes with ABSOLUTELY NO WARRANTY; for details see\n"
-"'LICENSE' file or <https://www.gnu.org/licenses/gpl-3.0.en.html>\n"
-"This is free software, and you are welcome to redistribute it\n"
-"under certain conditions; see 'LICENSE' file or\n"
-"<https://www.gnu.org/licenses/gpl-3.0.en.html> for details.\n"
-, REPO_NAME);
-
-}
-
 void toUpper (char *str, char *key, int *keyIsNotAlpha)
 {
 
@@ -106,16 +67,6 @@ void toUpper (char *str, char *key, int *keyIsNotAlpha)
 
         j++;
     }
-
-}
-
-void prepareStrings (char action, char *str, char *key)
-{
-    int p = 0, *keyIsNotAlpha = &p;
-
-    toUpper (str, key, keyIsNotAlpha);
-    setDefaultKey (key, keyIsNotAlpha);
-    work (action, str, key);
 
 }
 

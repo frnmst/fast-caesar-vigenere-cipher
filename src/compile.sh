@@ -28,7 +28,7 @@
 # -march=native = compiled only for that particular arch
 # ANSI standard (C90)
 # -D_DEFAULT_SOURCE are compiler headers that make possible to use -ansi
-paths="fcvc.c core.c utils.c monoalphaModules/* polyalphaModules/*"
+paths="*.c"
 outFile="fcvc"
 
 gcc $paths \

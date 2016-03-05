@@ -25,7 +25,7 @@
 /* Main header.  */
 #ifndef M_FCVC_H
 #define M_FCVC_H
-    #include "../fcvc.h"
+#include "fcvc.h"
 #endif
 
 
@@ -74,8 +74,10 @@ void findSpacings (char *str, int *spacings)
 int reallocSpacingArray (int *spacings, int len)
 {
 
-    int i = 0, spacingArraySize = 0, *tmp = NULL;
+    int i = 0, spacingArraySize = 0, *tmp;
 
+
+    tmp = NULL;
 
     /* Ignore zeros in the array (since spacings cannot be equal to zero).  */
     for (i = 0; i < len; i++)

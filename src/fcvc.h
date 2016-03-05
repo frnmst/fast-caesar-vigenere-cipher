@@ -52,7 +52,6 @@
 /* Program constants.  */
 #define PRG_NAME "fcvc"
 #define REPO_NAME "fast-caesar-vigenere-cipher"
-#define G 2
 
 /* Numeric constants.  */
 #define ALPHABET_NUMS 26
@@ -63,8 +62,9 @@
 /* Added to adhere to ANSI standard to avoid using getopt.h */
 extern int getopt (int, char * const *, const char *);
 void parseArgs (int *argc, char **argv);
-void helpAndExit (void);
 void help (void);
+
+void helpAndExit (void);
 void checkArgc (int keySet, int *argc, int numElts);
 void crackCaesar (char *inputString);
 void crackVigenere (char *inputString);
@@ -72,7 +72,7 @@ void prepareStrings (char action, char *str, char *key);
 void toUpper (char *str, char *key, int *keyIsNotAlpha);
 void setDefaultKey (char *key, int *keyIsNotAlpha);
 void work (char action, char *str, char *key);
-char *transform (char *action, char *letter, char *alphabet);
+char *transform (char action, char *letter, char *alphabet);
 
 /* Polyalphabes prototypes.  */
 void findSpacings (char *str, int *dist);
