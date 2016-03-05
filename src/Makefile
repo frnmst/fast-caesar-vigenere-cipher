@@ -30,14 +30,16 @@ BIN_DIR = /usr/bin
 INSTALL = /usr/bin/install
 
 CFLAGS = -Wall -Wextra -Wpedantic -Werror -march=native -O0
-CSTANDARD = -ansi
+CSTANDARD = -std=c90
 MACRO_REQ = -D_DEFAULT_SOURCE
 
 PRG_NAME = fcvc
-PRG_OBJFILES = fcvc.o
+PRG_OBJFILES = core.o guessVigenere.o utils.o fcvc.o
 
+INDENT_OPTS = -kr -prs -nut
 
 # targets
+
 
 default : link # default target
 
@@ -65,6 +67,11 @@ uninstall:
 	@echo "Removing $(PRG_NAME) from system ..."
 	@rm -fv $(BIN_DIR)/$(PRG_NAME)
 	@echo "$(PRG_NAME) removed."
+
+indent:
+	@echo "Indenting all files..."
+	@./indent.sh "$(INDENT_OPTS)" "$(PRG_OBJFILES)"
+	@echo "Done."
 
 clean :
 	@echo "Removing object files..."

@@ -23,72 +23,69 @@
 
 
 /* Main header.  */
-#ifndef M_FCVC_H
-#define M_FCVC_H
-#include "fcvc.h"
+#ifndef M_CORE_H
+#define M_CORE_H
+#include "core.h"
 #endif
 
 
 /* Low level common crypt functions.  */
 
-void setDefaultKey (char *key, int *keyIsNotAlpha)
+void setDefaultKey( char *key, int *keyIsNotAlpha )
 {
 
     /* If key has no valid character, set 'A' as default key. This way the
      *  input string is not modified.  */
-    if (*keyIsNotAlpha == (int) strlen (key))
-    {
-        key [0] = 'A';
-        key [1] = '\0';
+    if ( *keyIsNotAlpha == ( int ) strlen( key ) ) {
+        key[0] = 'A';
+        key[1] = '\0';
     }
 
 }
 
-void work (char action, char *str, char *key)
+void work( char action, char *str, char *key )
 {
 
-    int i = 0, j = 0, keyLen = strlen (key), strLen = strlen (str);
+    int i = 0, j = 0, keyLen = strlen( key ), strLen = strlen( str );
     int setBreak = 0;
 
 
-    while (i < strLen)
-    {
+    while ( i < strLen ) {
         /* Key loop.  */
-        if (j == keyLen)
+        if ( j == keyLen )
             j = 0;
 
         /* Non alphabetical characters of the key are ignored.  */
-        while (isalpha (key[j]) == 0 && j < keyLen)
-        {
+        while ( isalpha( key[j] ) == 0 && j < keyLen ) {
             j++;
-            if (j == keyLen)
+            if ( j == keyLen )
                 j = 0;
         }
 
         /* Non alphabetical characters of the string are ignored and printed
-as is.  */
-        while (isalpha (str[i]) == 0 && i < strLen)
-        {
-            fprintf (stdout, "%c", str[i]);
+           as is.  */
+        while ( isalpha( str[i] ) == 0 && i < strLen ) {
+            fprintf( stdout, "%c", str[i] );
             i++;
-            if (i >= strLen)
+            if ( i >= strLen )
                 setBreak = 1;
         }
 
         /* Avoid string overflow if the last character is not in the isalpha
-range.  */
-        if (setBreak == 1)
+           range.  */
+        if ( setBreak == 1 )
             break;
 
         /* Print the transformed char.  */
-        fprintf (stdout, "%c", *(transform (action, &str[i], &key[j])));
+        fprintf( stdout, "%c",
+                 *( transform( action, &str[i], &key[j] ) ) );
 
         i++;
         j++;
 
     }
 
-    fprintf (stdout, "\n");
+    fprintf( stdout, "\n" );
 
 }
 
@@ -96,17 +93,19 @@ range.  */
  * cipher 'c'
  * decipher 'd'
  */
-char *transform (char action, char *letter, char *alphabet)
+char *transform( char action, char *letter, char *alphabet )
 {
 
-    if (action == 'c')
-     *letter = ((*letter + *alphabet) % ALPHABET_NUMS) + LETTER_OFFSET;
+    if ( action == 'c' )
+        *letter =
+            ( ( *letter + *alphabet ) % ALPHABET_NUMS ) + LETTER_OFFSET;
     /* Adding ALPHABET_NUMS keeps the mod operation > 0, so it is well
      * defined.  */
     else
-     *letter = ((*letter - *alphabet + ALPHABET_NUMS) % ALPHABET_NUMS) + LETTER_OFFSET;
+        *letter =
+            ( ( *letter - *alphabet + ALPHABET_NUMS ) % ALPHABET_NUMS ) +
+            LETTER_OFFSET;
 
     return letter;
 
 }
-

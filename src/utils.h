@@ -1,5 +1,5 @@
 /*
- * fcvc.h
+ * utils.h
  *
  * Copyright (C) 2016 frnmst (Franco Masotti) <franco.masotti@live.com>
  *                                            <franco.masotti@student.unife.it>
@@ -22,22 +22,11 @@
  */
 
 
-#ifndef M_CORE_H
-#define M_CORE_H
-#include "core.h"
+#ifndef M_GLOBALDEFINES_H
+#define M_GLOBALDEFINES_H
+#include "globalDefines.h"
 #endif
 
-#ifndef M_UTILS_H
-#define M_UTILS_H
-#include "utils.h"
-#endif
-
-#ifndef M_GUESSVIGENERE_H
-#define M_GUESSVIGENERE_H
-#include "guessVigenere.h"
-#endif
-
-/* C headers */
 #ifndef M_STDIO_H
 #define M_STDIO_H
 #include <stdio.h>              /* io functions */
@@ -63,19 +52,13 @@
 #include <stdlib.h>             /* malloc, free */
 #endif
 
-/* Program constants.  */
-#define PRG_NAME "fcvc"
-#define REPO_NAME "fast-caesar-vigenere-cipher"
-
-/* Numeric constants.  */
-#define ALPHABET_NUMS 26
-#define LETTER_OFFSET 65
-
 
 /* Function/procedure prototypes.  */
-/* Added to adhere to ANSI standard to avoid using getopt.h */
-extern int getopt( int, char *const *, const char * );
-void parseArgs( int *argc, char **argv );
-void crackCaesar( char *inputString );
-void crackVigenere( char *inputString );
-void prepareStrings( char *str, char *key );
+int compareIntegers( const void *a, const void *b );
+void orderArray( int *array, int len );
+void help( void );
+void helpAndExit( void );
+void checkArgc( int keySet, int *argc, int numElts );
+void toUpper( char *str, char *key, int *keyIsNotAlpha );
+int *reallocArray( int *array, int len );
+int trimArray( int *array, int len );

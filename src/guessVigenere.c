@@ -1,5 +1,5 @@
 /*
- * findRepeatingSubstrings.c
+ * guessVigenere.c
  *
  * Copyright (C) 2016 frnmst (Franco Masotti) <franco.masotti@live.com>
  *                                            <franco.masotti@student.unife.it>
@@ -22,45 +22,39 @@
  */
 
 
-/* Main header.  */
-#ifndef M_FCVC_H
-#define M_FCVC_H
-#include "fcvc.h"
+#ifndef M_GUESSVIGENERE_H
+#define M_GUESSVIGENERE_H
+#include "guessVigenere.h"
 #endif
 
-
-/* Comments TODO better.  */
 
 /* Function that finds the distances between at least copies repeating
  * consecutive characters in the input string str. The result is saved into
  * the integer array string.  */
-void findSpacings (char *str, int *spacings)
+void findSpacings( char *str, int *spacings )
 {
 
     /* Positional string.  */
-    int strLen = strlen (str), i = 0, j = 1, k = 0;
+    int strLen = strlen( str ), i = 0, j = 1, k = 0;
     int ip = 0;
     /* Find repeating sequences of size of at least substrOff.  */
     const short int substrOff = 2;
 
 
     j = 1;
-    while (i <= strLen)
-    {
-        while (j <= strLen && str[i] != str[j])
+    while ( i <= strLen ) {
+        while ( j <= strLen && str[i] != str[j] )
             j++;
 
-        j += (substrOff - 1);
+        j += ( substrOff - 1 );
         ip = substrOff - 1;
-        while (j <= strLen && str [i + ip] == str [j])
-        {
-            spacings [k] = abs (j - (i + ip));
+        while ( j <= strLen && str[i + ip] == str[j] ) {
+            spacings[k] = abs( j - ( i + ip ) );
             k++;
             j++;
             ip++;
         }
-        if (j >= strLen)
-        {
+        if ( j >= strLen ) {
             i++;
             j = i + 1;
         }
@@ -68,29 +62,26 @@ void findSpacings (char *str, int *spacings)
 
 }
 
-/* Since the array spacings is as long as the str and we know it will not be
- * entirely used, it must be reallocated both to avoid zeros in that array, and
- * also to free space.  */
-int reallocSpacingArray (int *spacings, int len)
+/* spacings is a subset of factors.  */
+/* This function is awful but it can be changed with a more efficient one.  */
+void factor( int *factors, int *spacings, int spacingsArraySize )
 {
 
-    int i = 0, spacingArraySize = 0, *tmp;
+    int i = 0, j = 0, k = 0;
 
 
-    tmp = NULL;
+    while ( i < spacingsArraySize ) {
+        j = spacings[i];
+        while ( j >= 2 ) {
+            if ( ( spacings[i] % j ) == 0 ) {
+                factors[k] = j;
+                k++;
+            }
+            j--;
+        }
+        i++;
+    }
 
-    /* Ignore zeros in the array (since spacings cannot be equal to zero).  */
-    for (i = 0; i < len; i++)
-        if (spacings [i] != 0)
-            spacingArraySize ++;
-
-    /* Safe realloc using a temporary pointer.  */
-    if ((tmp = (int *) realloc (spacings, sizeof (int) * spacingArraySize)) == NULL)
-        exit (EXIT_FAILURE);
-    else
-        spacings = tmp;
-
-    return spacingArraySize;
+    return;
 
 }
-

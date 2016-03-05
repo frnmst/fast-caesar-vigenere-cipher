@@ -22,47 +22,102 @@
  */
 
 
-/* Main header.  */
-#ifndef M_FCVC_H
-#define M_FCVC_H
-    #include "fcvc.h"
+#ifndef M_UTILS_H
+#define M_UTILS_H
+#include "utils.h"
 #endif
 
 
-void checkArgc (int keySet, int *argc, int numElts)
+int compareIntegers( const void *a, const void *b )
 {
 
-    if (*argc != numElts)
-        helpAndExit ();
-    if (keySet != 1 && keySet != 'a')
-        helpAndExit ();
+    const int *da = ( const int * ) a;
+    const int *db = ( const int * ) b;
+
+    return ( *da > *db ) - ( *da < *db );
 
 }
 
-void helpAndExit (void)
+void orderArray( int *array, int len )
 {
 
-    fprintf (stderr, "\n");
-    help ();
-    exit (EXIT_FAILURE);
+    qsort( array, len, sizeof( int ), compareIntegers );
+
+    return;
 
 }
 
-void toUpper (char *str, char *key, int *keyIsNotAlpha)
+void checkArgc( int keySet, int *argc, int numElts )
+{
+
+    if ( *argc != numElts )
+        helpAndExit(  );
+    if ( keySet != 1 && keySet != 'a' )
+        helpAndExit(  );
+
+}
+
+void help( void )
+{
+
+    fprintf( stderr,
+             "Usage: %s {OPTION1} [OPTION2]\n"
+             "An ANSI C, fast and efficient implementation of Caesar and Vigenere cipher.\n"
+             "\n"
+             "Only one or two options are permitted.\n"
+             "\tfcvc {-a,-v} \"INPUT STRING\"\n"
+             "\tfcvc -k KEY {-c,-d} \"INPUT STRING\"\n"
+             "\n"
+             "\t-a\tTry all 26 alphabets for the INPUT STRING.\n"
+             "\t-c\tEncipher INPUT STRING.\n"
+             "\t-d\tDecipher INPUT STRING.\n"
+             "\t-h\tPrint this help.\n"
+             "\t-k\tUse KEY to encipher or decipher INPUT STRING.\n"
+             "\t-v\tDecipher Vigenere INPUT STRING.\n" "\n", PRG_NAME );
+    fprintf( stderr,
+             "Exit value:\n"
+             "\t0\tno error occurred,\n"
+             "\t!= 0\tsome error occurred.\n"
+             "\n"
+             "Report bugs to: franco.masotti@student.unife.it or franco.masotti@live.com\n"
+             "Full documentation at: <https://github.com/frnmst/%s>\n"
+             "or available locally via: %s -h\n"
+             "\n", REPO_NAME, PRG_NAME );
+    fprintf( stderr,
+             "%s  Copyright © 2016  frnmst (Franco Masotti)\n"
+             "This program comes with ABSOLUTELY NO WARRANTY; for details see\n"
+             "'LICENSE' file or <https://www.gnu.org/licenses/gpl-3.0.en.html>\n"
+             "This is free software, and you are welcome to redistribute it\n"
+             "under certain conditions; see 'LICENSE' file or\n"
+             "<https://www.gnu.org/licenses/gpl-3.0.en.html> for details.\n",
+             REPO_NAME );
+
+    return;
+
+}
+
+void helpAndExit( void )
+{
+
+    fprintf( stderr, "\n" );
+    help(  );
+    exit( EXIT_FAILURE );
+
+}
+
+void toUpper( char *str, char *key, int *keyIsNotAlpha )
 {
 
     int i = 0, j = 0;
 
-    while (str[i] != '\0')
-    {
-        str[i] = toupper (str[i]);
+    while ( str[i] != '\0' ) {
+        str[i] = toupper( str[i] );
         i++;
     }
-    while (key[j] != '\0')
-    {
-        key[j] = toupper (key[j]);
+    while ( key[j] != '\0' ) {
+        key[j] = toupper( key[j] );
 
-        if (isalpha (key[j]) == 0)
+        if ( isalpha( key[j] ) == 0 )
             *keyIsNotAlpha = *keyIsNotAlpha + 1;
 
         j++;
@@ -70,3 +125,41 @@ void toUpper (char *str, char *key, int *keyIsNotAlpha)
 
 }
 
+int *reallocArray( int *array, int len )
+{
+
+    int *tmp;
+
+
+    tmp = NULL;
+
+    /* Safe realloc using a temporary pointer.  */
+    if ( ( tmp = realloc( array, sizeof( int ) * len ) ) == NULL )
+        exit( EXIT_FAILURE );
+    else
+        array = tmp;
+
+    return array;
+
+}
+
+/* Since the array spacings is as long as the str and we know it will not be
+ * entirely used, it must be reallocated both to avoid zeros in that array, and
+ * also to free space.  */
+/* The same works for factors array.  */
+int trimArray( int *array, int len )
+{
+
+    int i = 0, newArraySize = 0;
+
+
+    /* Ignore zeros in the array (since spacings cannot be equal to zero).  */
+    for ( i = 0; i < len; i++ )
+        if ( array[i] != 0 )
+            newArraySize++;
+
+    array = reallocArray( array, newArraySize );
+
+    return newArraySize;
+
+}

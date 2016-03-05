@@ -1,5 +1,5 @@
 /*
- * fcvc.h
+ * globalDefines.h
  *
  * Copyright (C) 2016 frnmst (Franco Masotti) <franco.masotti@live.com>
  *                                            <franco.masotti@student.unife.it>
@@ -22,47 +22,6 @@
  */
 
 
-#ifndef M_CORE_H
-#define M_CORE_H
-#include "core.h"
-#endif
-
-#ifndef M_UTILS_H
-#define M_UTILS_H
-#include "utils.h"
-#endif
-
-#ifndef M_GUESSVIGENERE_H
-#define M_GUESSVIGENERE_H
-#include "guessVigenere.h"
-#endif
-
-/* C headers */
-#ifndef M_STDIO_H
-#define M_STDIO_H
-#include <stdio.h>              /* io functions */
-#endif
-
-#ifndef M_UNISTD_H
-#define M_UNISTD_H
-#include <unistd.h>             /* getopt */
-#endif
-
-#ifndef M_CTYPE_H
-#define M_CTYPE_H
-#include <ctype.h>              /* isalpha, toupper */
-#endif
-
-#ifndef M_STRING_H
-#define M_STRING_H
-#include <string.h>             /* strlen, strdup */
-#endif
-
-#ifndef M_STDLIB_H
-#define M_STDLIB_H
-#include <stdlib.h>             /* malloc, free */
-#endif
-
 /* Program constants.  */
 #define PRG_NAME "fcvc"
 #define REPO_NAME "fast-caesar-vigenere-cipher"
@@ -72,10 +31,3 @@
 #define LETTER_OFFSET 65
 
 
-/* Function/procedure prototypes.  */
-/* Added to adhere to ANSI standard to avoid using getopt.h */
-extern int getopt( int, char *const *, const char * );
-void parseArgs( int *argc, char **argv );
-void crackCaesar( char *inputString );
-void crackVigenere( char *inputString );
-void prepareStrings( char *str, char *key );

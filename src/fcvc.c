@@ -44,31 +44,31 @@
 /* Main header.  */
 #ifndef M_FCVC_H
 #define M_FCVC_H
-    #include "fcvc.h"
+#include "fcvc.h"
 #endif
 
 
-int main (int argc, char **argv)
+int main( int argc, char **argv )
 {
 
-	/*
-	 * Input: switch
-	 *		-a = try all alphabets
-	 *		-c = crypt, requires -k
-	 *		-d = decrypt, requires -k
-	 *		-h = help
-	 *		-k = key, used by -c and -d
+    /*
+     * Input: switch
+     *              -a = try all alphabets
+     *              -c = crypt, requires -k
+     *              -d = decrypt, requires -k
+     *              -h = help
+     *              -k = key, used by -c and -d
      *      -v = decipher a vigenere input text.
      *
-	 */
+     */
 
-	parseArgs (&argc, argv);
+    parseArgs( &argc, argv );
 
-	exit (EXIT_SUCCESS);
+    exit( EXIT_SUCCESS );
 
 }
 
-void parseArgs (int *argc, char **argv)
+void parseArgs( int *argc, char **argv )
 {
 
     int c, keySet = 0;
@@ -79,71 +79,72 @@ void parseArgs (int *argc, char **argv)
 
 
     /* Input argument parsing.  */
-    while ((c = getopt (*argc, (char * const *) argv, optionsString)) != -1)
-    {
+    while ( ( c =
+              getopt( *argc, ( char *const * ) argv,
+                      optionsString ) ) != -1 ) {
 
-        switch (c)
-        {
-			case 'a':
-				checkArgc ('a', argc, 3);
-				crackCaesar (optarg);
-				break;
+        switch ( c ) {
+        case 'a':
+            checkArgc( 'a', argc, 3 );
+            crackCaesar( optarg );
+            break;
 
-			case 'c':
-				checkArgc (keySet, argc, 5);
-                prepareStrings ('c', optarg, key);
-                free (key);
-				break;
+        case 'c':
+            checkArgc( keySet, argc, 5 );
+            prepareStrings( optarg, key );
+            work( 'c', optarg, key );
+            free( key );
+            break;
 
-			case 'd':
-				checkArgc (keySet, argc, 5);
-                prepareStrings ('d', optarg, key);
-                free (key);
-				break;
+        case 'd':
+            checkArgc( keySet, argc, 5 );
+            prepareStrings( optarg, key );
+            work( 'd', optarg, key );
+            free( key );
+            break;
 
-			case 'h':
-				help ();
-				break;
+        case 'h':
+            help(  );
+            break;
 
-			case 'k':
-                keySet = 1;
-				checkArgc (keySet, argc, 5);
-				key = strdup (optarg);
-                if (key == NULL)
-                    exit (EXIT_FAILURE);
-				break;
+        case 'k':
+            keySet = 1;
+            checkArgc( keySet, argc, 5 );
+            key = strdup( optarg );
+            if ( key == NULL )
+                exit( EXIT_FAILURE );
+            break;
 
-            case 'v':
-                fprintf (stderr, "Unimplemented\n");
-                crackVigenere (optarg);
-                exit (EXIT_FAILURE);
-                break;
+        case 'v':
+            fprintf( stderr, "Unimplemented\n" );
+            crackVigenere( optarg );
+            exit( EXIT_FAILURE );
+            break;
 
-			default:
-                helpAndExit ();
-				break;
-		}
-	}
+        default:
+            helpAndExit(  );
+            break;
+        }
+    }
 
     /* If no argument has been given, exit with help.  */
-    if (optind == 1)
-        helpAndExit ();
+    if ( optind == 1 )
+        helpAndExit(  );
 
     return;
 
 }
 
-void prepareStrings (char action, char *str, char *key)
+void prepareStrings( char *str, char *key )
 {
     int p = 0, *keyIsNotAlpha = &p;
 
-    toUpper (str, key, keyIsNotAlpha);
-    setDefaultKey (key, keyIsNotAlpha);
-    work (action, str, key);
+    toUpper( str, key, keyIsNotAlpha );
+    setDefaultKey( key, keyIsNotAlpha );
 
 }
 
-void crackCaesar (char *inputString)
+void crackCaesar( char *inputString )
 {
 
     int i = 0, dummy;
@@ -153,99 +154,85 @@ void crackCaesar (char *inputString)
     str = NULL;
 
     /* Copy original string so that function input is not modified.  */
-    if ((str = strdup (inputString)) == NULL)
-        exit (EXIT_FAILURE);
+    if ( ( str = strdup( inputString ) ) == NULL )
+        exit( EXIT_FAILURE );
 
-    toUpper (str, key, &dummy);
+    toUpper( str, key, &dummy );
     key[0] = 'A' + 0;
     key[1] = '\0';
 
     /* In the first loop: str = str - 'A' which is like: str = str - 0
      * Then: str = str - 1. */
-    for (i = 0; i < ALPHABET_NUMS; i++)
-    {
+    for ( i = 0; i < ALPHABET_NUMS; i++ ) {
         /* Print the current alphabet number.  */
-        fprintf (stdout, "%d\t", i + 1);
+        fprintf( stdout, "%d\t", i + 1 );
 
         /* str = str - key.  */
-        work ('d', str, key);
+        work( 'd', str, key );
 
         /* Go to the next alphabet.
          * str = str - 1.  */
         key[0] = 'A' + 1;
     }
 
-    free (str);
+    free( str );
 
     return;
 }
 
-void crackVigenere (char *str)
+void crackVigenere( char *cryptogram )
 {
-    int strLen = strlen (str), spacingsArraySize;
-    int *spacings;
+
+    char *str;
+    int strLen = strlen( cryptogram ), arraySize;
+    int *spacings, *factors;
     int i;
 
 
+    str = NULL;
     spacings = NULL;
+    factors = NULL;
 
-    /* Transform input string in an alpha(toupper(string)).  */
-    /*TODO.  */
+
+    if ( ( str = strdup( cryptogram ) ) == NULL )
+        exit( EXIT_FAILURE );
+
+    /* The following only sets the string to toupper. MIssing controls for non
+     * alpha chars.  */
+    prepareStrings( str, str );
 
     /* Using calloc is like setting all the array to zero.  */
-    if ((spacings = (int *) calloc (strLen, strLen * sizeof (int))) == NULL)
-        exit (EXIT_FAILURE);
+    if ( ( spacings = calloc( strLen, sizeof( int ) ) ) == NULL )
+        exit( EXIT_FAILURE );
+    findSpacings( str, spacings );
+    arraySize = trimArray( spacings, strLen );
 
-    findSpacings (str, spacings);
-    spacingsArraySize = reallocSpacingArray (spacings, strLen);
+    if ( ( factors =
+           calloc( arraySize * arraySize, sizeof( int ) ) ) == NULL )
+        exit( EXIT_FAILURE );
+    factor( factors, spacings, arraySize );
+    arraySize = trimArray( factors, arraySize * arraySize );
 
-    /* Print spacings.  */
+    /* Order factors array */
+    orderArray( factors, arraySize );
+
+    /* Get max element knowing that it's in position len(factors-1) */
+
+    /* Declare an int array of len (max_element_ */
+
+    /* Count occurrences of same number i and save it in position i */
+
+    /* Get the three indices with the highest value:  These three numbers
+     * represent the possible key lengths.  */
+
+
     i = 0;
-    while (i < spacingsArraySize)
-    {
-        printf ("%d ", spacings[i]);
+    while ( i < arraySize ) {
+        printf( "%d ", factors[i] );
         i++;
     }
 
-}
-
-void help (void)
-{
-
-    fprintf (stderr,
-"Usage: %s {OPTION1} [OPTION2]\n"
-"An ANSI C, fast and efficient implementation of Caesar and Vigenere cipher.\n"
-"\n"
-"Only one or two options are permitted.\n"
-"\tfcvc {-a,-v} \"INPUT STRING\"\n"
-"\tfcvc -k KEY {-c,-d} \"INPUT STRING\"\n"
-"\n"
-"\t-a\tTry all 26 alphabets for the INPUT STRING.\n"
-"\t-c\tEncipher INPUT STRING.\n"
-"\t-d\tDecipher INPUT STRING.\n"
-"\t-h\tPrint this help.\n"
-"\t-k\tUse KEY to encipher or decipher INPUT STRING.\n"
-"\t-v\tDecipher Vigenere INPUT STRING.\n"
-"\n", PRG_NAME);
-    fprintf (stderr,
-"Exit value:\n"
-"\t0\tno error occurred,\n"
-"\t!= 0\tsome error occurred.\n"
-"\n"
-"Report bugs to: franco.masotti@student.unife.it or franco.masotti@live.com\n"
-"Full documentation at: <https://github.com/frnmst/%s>\n"
-"or available locally via: %s -h\n"
-"\n", REPO_NAME, PRG_NAME);
-    fprintf (stderr,
-"%s  Copyright © 2016  frnmst (Franco Masotti)\n"
-"This program comes with ABSOLUTELY NO WARRANTY; for details see\n"
-"'LICENSE' file or <https://www.gnu.org/licenses/gpl-3.0.en.html>\n"
-"This is free software, and you are welcome to redistribute it\n"
-"under certain conditions; see 'LICENSE' file or\n"
-"<https://www.gnu.org/licenses/gpl-3.0.en.html> for details.\n"
-, REPO_NAME);
 
     return;
 
 }
-

@@ -3,10 +3,13 @@ fast-caesar-vigenere-cipher
 An ANSI C, fast and efficient implementation of Caesar and Vigenère cipher.
 
 ## Compile
-To compile please use run `$ cd src && ./compile.sh` instead of using the 
-Makefile. 
+To compile you can run `make` in the `src` directory. This will create an 
+executable called `fcvc` (as well as all the object files) in the `src` 
+directory.
 
-This will create an executable called `fcvc` in the `src` directory.
+To indent the source code you must install `indent`, then run: `$ make indent`.
+
+You can see all the available targets with `$ cat Makefile`
 
 ## Help
 ```
