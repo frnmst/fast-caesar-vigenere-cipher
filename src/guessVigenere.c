@@ -31,7 +31,7 @@
 /* Function that finds the distances between at least copies repeating
  * consecutive characters in the input string str. The result is saved into
  * the integer array string.  */
-void findSpacings( char *str, int *spacings )
+int findSpacings( char *str, int *spacings )
 {
 
     /* Positional string.  */
@@ -60,11 +60,13 @@ void findSpacings( char *str, int *spacings )
         }
     }
 
+    return k;
+
 }
 
 /* spacings is a subset of factors.  */
 /* This function is awful but it can be changed with a more efficient one.  */
-void factor( int *factors, int *spacings, int spacingsArraySize )
+int factor( int *factors, int *spacings, int spacingsArraySize )
 {
 
     int i = 0, j = 0, k = 0;
@@ -82,6 +84,39 @@ void factor( int *factors, int *spacings, int spacingsArraySize )
         i++;
     }
 
-    return;
+    return k;
+
+}
+
+int countOccurrences( struct occurrences *occur, int *factors,
+                      int factorsArraySize )
+{
+
+    int i = 0, k = 0;
+
+
+    /* assert (occur is orderered creasingly).  */
+    /* assert (factorsArraySize >= 1)  */
+
+    occur[0].factor = factors[0];
+    occur[0].count = 1;
+
+    i = 1;
+    while ( i < factorsArraySize ) {
+        /* Current factor == previous  */
+        if ( factors[i] == factors[i - 1] )
+            /* Increase occurence counter.  */
+            occur[k].count++;
+        else {
+            /* New factor.  */
+            k++;
+            occur[k].factor = factors[i];
+            occur[k].count = 1;
+        }
+        i++;
+    }
+
+
+    return ( k + 1 );
 
 }

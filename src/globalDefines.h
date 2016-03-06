@@ -31,3 +31,9 @@
 #define LETTER_OFFSET 65
 
 
+/* Struct that stores the number of occurrences of each factor.  */
+struct occurrences {
+    int factor;
+    int count;
+};
+

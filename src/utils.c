@@ -34,7 +34,7 @@ int compareIntegers( const void *a, const void *b )
     const int *da = ( const int * ) a;
     const int *db = ( const int * ) b;
 
-    return ( *da > *db ) - ( *da < *db );
+    return (( *da > *db ) - ( *da < *db ));
 
 }
 
@@ -54,6 +54,8 @@ void checkArgc( int keySet, int *argc, int numElts )
         helpAndExit(  );
     if ( keySet != 1 && keySet != 'a' )
         helpAndExit(  );
+
+    return;
 
 }
 
@@ -103,8 +105,11 @@ void helpAndExit( void )
     help(  );
     exit( EXIT_FAILURE );
 
+    return;
+
 }
 
+/* Transform the to input string in upper case.  Count */
 void toUpper( char *str, char *key, int *keyIsNotAlpha )
 {
 
@@ -123,9 +128,15 @@ void toUpper( char *str, char *key, int *keyIsNotAlpha )
         j++;
     }
 
+    return;
+
 }
 
-int *reallocArray( int *array, int len )
+/* Since the array spacings is as long as the str and we know it will not be
+ * entirely used, it must be reallocated both to avoid zeros in that array, and
+ * also to free space.  */
+/* The same works for factors array.  */
+void trimArray( int *array, int len )
 {
 
     int *tmp;
@@ -139,27 +150,7 @@ int *reallocArray( int *array, int len )
     else
         array = tmp;
 
-    return array;
+    return;
 
 }
 
-/* Since the array spacings is as long as the str and we know it will not be
- * entirely used, it must be reallocated both to avoid zeros in that array, and
- * also to free space.  */
-/* The same works for factors array.  */
-int trimArray( int *array, int len )
-{
-
-    int i = 0, newArraySize = 0;
-
-
-    /* Ignore zeros in the array (since spacings cannot be equal to zero).  */
-    for ( i = 0; i < len; i++ )
-        if ( array[i] != 0 )
-            newArraySize++;
-
-    array = reallocArray( array, newArraySize );
-
-    return newArraySize;
-
-}

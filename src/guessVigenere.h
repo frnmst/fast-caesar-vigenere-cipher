@@ -52,7 +52,11 @@
 #include <stdlib.h>             /* malloc, free */
 #endif
 
+
 /* Function/procedure prototypes.  */
 
-void findSpacings( char *str, int *dist );
-void factor( int *factors, int *spacings, int spacingsArraySize );
+/* The following 3 functions return the new size of the arrays or structs.  */
+int findSpacings( char *str, int *dist );
+int factor( int *factors, int *spacings, int spacingsArraySize );
+int countOccurrences( struct occurrences *occur, int *factors,
+                      int factorsArraySize );

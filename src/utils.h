@@ -60,5 +60,5 @@ void help( void );
 void helpAndExit( void );
 void checkArgc( int keySet, int *argc, int numElts );
 void toUpper( char *str, char *key, int *keyIsNotAlpha );
-int *reallocArray( int *array, int len );
-int trimArray( int *array, int len );
+void trimArray( int *array, int len );
+

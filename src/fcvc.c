@@ -184,8 +184,10 @@ void crackVigenere( char *cryptogram )
 {
 
     char *str;
-    int strLen = strlen( cryptogram ), arraySize;
+    int strLen = strlen( cryptogram ), size;
     int *spacings, *factors;
+    struct occurrences *occur;
+
     int i;
 
 
@@ -204,31 +206,42 @@ void crackVigenere( char *cryptogram )
     /* Using calloc is like setting all the array to zero.  */
     if ( ( spacings = calloc( strLen, sizeof( int ) ) ) == NULL )
         exit( EXIT_FAILURE );
-    findSpacings( str, spacings );
-    arraySize = trimArray( spacings, strLen );
+    size = findSpacings( str, spacings );
+    trimArray( spacings, size );
 
     if ( ( factors =
-           calloc( arraySize * arraySize, sizeof( int ) ) ) == NULL )
+           calloc( size * size, sizeof( int ) ) ) == NULL )
         exit( EXIT_FAILURE );
-    factor( factors, spacings, arraySize );
-    arraySize = trimArray( factors, arraySize * arraySize );
+    size = factor( factors, spacings, size );
+    trimArray( factors, size );
+
+    free( spacings );
 
     /* Order factors array */
-    orderArray( factors, arraySize );
+    orderArray( factors, size );
 
-    /* Get max element knowing that it's in position len(factors-1) */
+    /* Maybe the following is better implemented with lists...  */
+    /* Get max_element knowing that it's in position len(factors-1).  */
+    /* Declare an struct with max_element elements.  */
+    if ( ( occur =
+           calloc( factors[size - 1],
+                   sizeof( struct occurrences ) ) ) == NULL )
+        exit( EXIT_FAILURE );
 
-    /* Declare an int array of len (max_element_ */
 
     /* Count occurrences of same number i and save it in position i */
+    size = countOccurrences( occur, factors, size );
+
+    free( factors );
 
     /* Get the three indices with the highest value:  These three numbers
      * represent the possible key lengths.  */
 
 
     i = 0;
-    while ( i < arraySize ) {
-        printf( "%d ", factors[i] );
+    while ( i < size ) {
+        printf( "factor %d has %d occurs\n", occur[i].factor,
+                occur[i].count );
         i++;
     }
 
