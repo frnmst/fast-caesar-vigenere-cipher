@@ -56,9 +56,10 @@
 /* Function/procedure prototypes.  */
 int compareIntegers( const void *a, const void *b );
 void orderArray( int *array, int len );
+int compareOccurrencesIntegers( const void *a, const void *b );
+void orderStruct( struct occurrences *occur, int len );
 void help( void );
 void helpAndExit( void );
 void checkArgc( int keySet, int *argc, int numElts );
 void toUpper( char *str, char *key, int *keyIsNotAlpha );
 void trimArray( int *array, int len );
-

@@ -34,7 +34,7 @@ int compareIntegers( const void *a, const void *b )
     const int *da = ( const int * ) a;
     const int *db = ( const int * ) b;
 
-    return (( *da > *db ) - ( *da < *db ));
+    return ( ( *da > *db ) - ( *da < *db ) );
 
 }
 
@@ -42,6 +42,26 @@ void orderArray( int *array, int len )
 {
 
     qsort( array, len, sizeof( int ), compareIntegers );
+
+    return;
+
+}
+
+int compareOccurrencesIntegers( const void *a, const void *b )
+{
+
+    const struct occurrences *oc1 = ( const struct occurrences * ) a;
+    const struct occurrences *oc2 = ( const struct occurrences * ) b;
+
+    return ( ( oc1->count > oc2->count ) - ( oc1->count < oc2->count ) );
+
+}
+
+void orderStruct( struct occurrences *occur, int len )
+{
+
+    qsort( occur, len, sizeof( struct occurrences ),
+           compareOccurrencesIntegers );
 
     return;
 
@@ -153,4 +173,3 @@ void trimArray( int *array, int len )
     return;
 
 }
-

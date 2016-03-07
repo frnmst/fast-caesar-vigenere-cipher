@@ -72,6 +72,9 @@ int factor( int *factors, int *spacings, int spacingsArraySize )
     int i = 0, j = 0, k = 0;
 
 
+    /* j = ceil (spacings  [i] / 2) avoid iterating half the number of
+     * numbers. You only need to save the first number before entering the
+     * second while loop.  */
     while ( i < spacingsArraySize ) {
         j = spacings[i];
         while ( j >= 2 ) {
@@ -118,5 +121,21 @@ int countOccurrences( struct occurrences *occur, int *factors,
 
 
     return ( k + 1 );
+
+}
+
+/* Get significant key lengths (ordered by decreasing score).  */
+int getKeyLens( int *keyLens, struct occurrences *occur, int len )
+{
+
+    int numberOfKeyLensToKeep = 3, i = 0;
+
+
+    while ( i < numberOfKeyLensToKeep ) {
+        keyLens[i] = occur[len - 1 - i].factor;
+        i++;
+    }
+
+    return numberOfKeyLensToKeep;
 
 }

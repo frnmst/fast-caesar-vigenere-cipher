@@ -185,7 +185,7 @@ void crackVigenere( char *cryptogram )
 
     char *str;
     int strLen = strlen( cryptogram ), size;
-    int *spacings, *factors;
+    int *spacings, *factors, *keyLens;
     struct occurrences *occur;
 
     int i;
@@ -194,6 +194,7 @@ void crackVigenere( char *cryptogram )
     str = NULL;
     spacings = NULL;
     factors = NULL;
+    keyLens = NULL;
 
 
     if ( ( str = strdup( cryptogram ) ) == NULL )
@@ -209,8 +210,7 @@ void crackVigenere( char *cryptogram )
     size = findSpacings( str, spacings );
     trimArray( spacings, size );
 
-    if ( ( factors =
-           calloc( size * size, sizeof( int ) ) ) == NULL )
+    if ( ( factors = calloc( size * size, sizeof( int ) ) ) == NULL )
         exit( EXIT_FAILURE );
     size = factor( factors, spacings, size );
     trimArray( factors, size );
@@ -234,14 +234,22 @@ void crackVigenere( char *cryptogram )
 
     free( factors );
 
+    orderStruct( occur, size );
+
     /* Get the three indices with the highest value:  These three numbers
      * represent the possible key lengths.  */
+    if ( ( keyLens = calloc( 3, sizeof( int ) ) ) == NULL )
+        exit( EXIT_FAILURE );
 
+    size = getKeyLens( keyLens, occur, size );
+
+    free( occur );
+
+    /* Get every keyLens[i] letter from str to do frequency analysis.  */
 
     i = 0;
     while ( i < size ) {
-        printf( "factor %d has %d occurs\n", occur[i].factor,
-                occur[i].count );
+        printf( "%d ", keyLens[i] );
         i++;
     }
 
