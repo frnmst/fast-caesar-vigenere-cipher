@@ -184,7 +184,7 @@ void crackVigenere( char *cryptogram )
 {
 
     char *str;
-    int strLen = strlen( cryptogram ), size;
+    int strLen = strlen( cryptogram ), size = 0;
     int *spacings, *factors, *keyLens;
     struct occurrences *occur;
 
@@ -202,13 +202,15 @@ void crackVigenere( char *cryptogram )
 
     /* The following only sets the string to toupper. MIssing controls for non
      * alpha chars.  */
-    prepareStrings( str, str );
+/*    prepareStrings( str, str );*/
 
-    /* Using calloc is like setting all the array to zero.  */
-    if ( ( spacings = calloc( strLen, sizeof( int ) ) ) == NULL )
+    /* In the worst case the space complexity for spacings =
+     *  O(strLen * strLen).  */
+    if ( ( spacings = calloc( strLen * strLen, sizeof( int ) ) ) == NULL )
         exit( EXIT_FAILURE );
     size = findSpacings( str, spacings );
     trimArray( spacings, size );
+
 
     if ( ( factors = calloc( size * size, sizeof( int ) ) ) == NULL )
         exit( EXIT_FAILURE );
@@ -238,17 +240,15 @@ void crackVigenere( char *cryptogram )
 
     /* Get the three indices with the highest value:  These three numbers
      * represent the possible key lengths.  */
-    if ( ( keyLens = calloc( 3, sizeof( int ) ) ) == NULL )
-        exit( EXIT_FAILURE );
-
-    size = getKeyLens( keyLens, occur, size );
+    keyLens = getKeyLens( occur, size );
 
     free( occur );
 
-    /* Get every keyLens[i] letter from str to do frequency analysis.  */
+
+    freqAnalysis( str, keyLens, NUMBER_OF_FACTORS_TO_KEEP );
 
     i = 0;
-    while ( i < size ) {
+    while ( i < NUMBER_OF_FACTORS_TO_KEEP ) {
         printf( "%d ", keyLens[i] );
         i++;
     }

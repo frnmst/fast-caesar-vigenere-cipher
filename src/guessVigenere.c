@@ -28,7 +28,7 @@
 #endif
 
 
-/* Function that finds the distances between at least copies repeating
+/* Function that finds the distances between at least couples repeating
  * consecutive characters in the input string str. The result is saved into
  * the integer array string.  */
 int findSpacings( char *str, int *spacings )
@@ -42,13 +42,13 @@ int findSpacings( char *str, int *spacings )
 
 
     j = 1;
-    while ( i <= strLen ) {
-        while ( j <= strLen && str[i] != str[j] )
+    while ( i < strLen ) {
+        while ( j < strLen && str[i] != str[j] )
             j++;
 
         j += ( substrOff - 1 );
         ip = substrOff - 1;
-        while ( j <= strLen && str[i + ip] == str[j] ) {
+        while ( j < strLen && str[i + ip] == str[j] ) {
             spacings[k] = abs( j - ( i + ip ) );
             k++;
             j++;
@@ -125,17 +125,111 @@ int countOccurrences( struct occurrences *occur, int *factors,
 }
 
 /* Get significant key lengths (ordered by decreasing score).  */
-int getKeyLens( int *keyLens, struct occurrences *occur, int len )
+int *getKeyLens( struct occurrences *occur, int len )
 {
 
-    int numberOfKeyLensToKeep = 3, i = 0;
+    int *keyLens;
+    int i = 0;
 
 
-    while ( i < numberOfKeyLensToKeep ) {
+    keyLens = NULL;
+    if ( ( keyLens = calloc( NUMBER_OF_FACTORS_TO_KEEP, sizeof( int ) ) ) == NULL )
+        exit( EXIT_FAILURE );
+
+    /* Keep up to NUMBER_OF_FACTORS_TO_KEEP key lengths (or factors).
+     * Do not overflow with i < len.  */
+    while ( i < NUMBER_OF_FACTORS_TO_KEEP && i < len) {
         keyLens[i] = occur[len - 1 - i].factor;
         i++;
     }
 
-    return numberOfKeyLensToKeep;
+    return keyLens;
 
+}
+
+
+/* Get every factor character staring from offset index.  */
+char *getSpacedSubstring( char *str, int factor, int offset )
+{
+
+    int i = 0, step, strLen = strlen( str );
+    char *spacedStr;
+
+
+    /* (strLen / factor ) + 1 is the size of spacedStr. +1 is used to avoid
+     * problems concerning rounding, so in the worst case we will get a
+     * useless character allocated.  */
+    spacedStr = NULL;
+    if ( ( spacedStr =
+           calloc( ( strLen / factor) + 1, sizeof( char ) ) ) == NULL )
+        exit( EXIT_FAILURE );
+
+    step = offset + ( factor * i );
+
+    while ( step < strLen ) {
+        spacedStr[i] = str[step];
+        i++;
+        step = offset + ( factor * i );
+    }
+
+    return spacedStr;
+
+}
+
+
+
+/* TODO  */
+/*
+void getFreqs(float *strScores)
+{
+    while (j < TOTAL_LANGS)
+    {
+        while (i < ALPHABET_NUMS)
+        {
+            if (strScore [i] - languageFreq[j].score[i] < tol)
+                i++;
+            else
+                break;
+        }
+        if (i == ALPHABET_NUMS)
+???            possibleLan
+    }
+}
+ */
+
+/* TODO  */
+/* Given an input string str, get the frequency of each letter
+ * (ALPHABET_NUMS) like this:
+ * #ofLetterOccurrences / strLen)
+ * Save the score of each letter in an array.
+ * Call getFreqs(float *strScores)
+ * Repeat this for all ALPHABET_NUMS alphabets.
+ */
+/* void getFreqs(char *str)*/
+
+
+void freqAnalysis( char *str, int *keyLens, int len )
+{
+
+    int i = 0, offset = 0;
+    char *tmpStr;
+
+
+    tmpStr = NULL;
+
+    while ( i < len ) {
+        /* Get every keyLens[i] letter (starting from the jth letter) from str
+         * then do frequency analysis.  */
+        offset = 0;
+        while ( offset < keyLens[i] && keyLens[i] != 0) {
+            tmpStr = getSpacedSubstring( str, keyLens[i], offset );
+            printf( "%s\n", tmpStr );
+/*            getFreqs (tmpStr)*/
+            offset++;
+        }
+
+        i++;
+    }
+
+    return;
 }

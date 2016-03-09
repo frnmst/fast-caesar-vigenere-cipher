@@ -60,4 +60,6 @@ int findSpacings( char *str, int *dist );
 int factor( int *factors, int *spacings, int spacingsArraySize );
 int countOccurrences( struct occurrences *occur, int *factors,
                       int factorsArraySize );
-int getKeyLens( int *keyLens, struct occurrences *occur, int len );
+int *getKeyLens( struct occurrences *occur, int len );
+char *getSpacedSubstring( char *str, int factor, int offset );
+void freqAnalysis( char *str, int *keyLens, int len );

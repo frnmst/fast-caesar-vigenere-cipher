@@ -30,6 +30,10 @@
 #define ALPHABET_NUMS 26
 #define LETTER_OFFSET 65
 
+/* Other defines */
+#define NUMBER_OF_FACTORS_TO_KEEP 4
+#define TOTAL_LANGS 2
+
 
 /* Struct that stores the number of occurrences of each factor.  */
 struct occurrences {
@@ -37,3 +41,9 @@ struct occurrences {
     int count;
 };
 
+
+/* TODO  */
+struct languageFreq {
+    char language[2]; /* ISO code.  */
+    float score[ALPHABET_NUMS];
+};
