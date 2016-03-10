@@ -61,14 +61,13 @@ int main( int argc, char **argv )
      *      -v = decipher a vigenere input text.
      *
      */
-
-    parseArgs( &argc, argv );
+    parseArgs( (size_t *) &argc, argv );
 
     exit( EXIT_SUCCESS );
 
 }
 
-void parseArgs( int *argc, char **argv )
+void parseArgs( size_t *argc, char **argv )
 {
 
     int c, keySet = 0;
@@ -84,6 +83,7 @@ void parseArgs( int *argc, char **argv )
                       optionsString ) ) != -1 ) {
 
         switch ( c ) {
+        /* 3 or 5 arguments are possible.  */
         case 'a':
             checkArgc( 'a', argc, 3 );
             crackCaesar( optarg );
@@ -147,7 +147,8 @@ void prepareStrings( char *str, char *key )
 void crackCaesar( char *inputString )
 {
 
-    int i = 0, dummy;
+    size_t i = 0;
+    int dummy;
     char *str, key[2];
 
 
@@ -158,21 +159,21 @@ void crackCaesar( char *inputString )
         exit( EXIT_FAILURE );
 
     toUpper( str, key, &dummy );
-    key[0] = 'A' + 0;
+    key[0] = 'A' + (char) 0;
     key[1] = '\0';
 
     /* In the first loop: str = str - 'A' which is like: str = str - 0
      * Then: str = str - 1. */
     for ( i = 0; i < ALPHABET_NUMS; i++ ) {
         /* Print the current alphabet number.  */
-        fprintf( stdout, "%d\t", i + 1 );
+        fprintf( stdout, "%d\t", (int) i + 1 );
 
         /* str = str - key.  */
         work( 'd', str, key );
 
         /* Go to the next alphabet.
          * str = str - 1.  */
-        key[0] = 'A' + 1;
+        key[0] = 'A' + (char) 1;
     }
 
     free( str );
@@ -184,7 +185,7 @@ void crackVigenere( char *cryptogram )
 {
 
     char *str;
-    int strLen = strlen( cryptogram ), size = 0;
+    size_t strLen = strlen( cryptogram ), size = 0;
     int *spacings, *factors, *keyLens;
     struct occurrences *occur;
 
@@ -210,7 +211,6 @@ void crackVigenere( char *cryptogram )
         exit( EXIT_FAILURE );
     size = findSpacings( str, spacings );
     trimArray( spacings, size );
-
 
     if ( ( factors = calloc( size * size, sizeof( int ) ) ) == NULL )
         exit( EXIT_FAILURE );
@@ -244,7 +244,6 @@ void crackVigenere( char *cryptogram )
 
     free( occur );
 
-
     freqAnalysis( str, keyLens, NUMBER_OF_FACTORS_TO_KEEP );
 
     i = 0;
@@ -253,6 +252,7 @@ void crackVigenere( char *cryptogram )
         i++;
     }
 
+    free ( keyLens );
 
     return;
 

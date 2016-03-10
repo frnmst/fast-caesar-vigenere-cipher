@@ -32,11 +32,6 @@
 #include <stdio.h>              /* io functions */
 #endif
 
-#ifndef M_UNISTD_H
-#define M_UNISTD_H
-#include <unistd.h>             /* getopt */
-#endif
-
 #ifndef M_CTYPE_H
 #define M_CTYPE_H
 #include <ctype.h>              /* isalpha, toupper */
@@ -56,4 +51,3 @@
 /* Function/procedure prototypes.  */
 void setDefaultKey( char *key, int *keyIsNotAlpha );
 void work( char action, char *str, char *key );
-char *transform( char action, char *letter, char *alphabet );

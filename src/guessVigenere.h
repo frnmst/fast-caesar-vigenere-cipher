@@ -32,11 +32,6 @@
 #include <stdio.h>              /* io functions */
 #endif
 
-#ifndef M_UNISTD_H
-#define M_UNISTD_H
-#include <unistd.h>             /* getopt */
-#endif
-
 #ifndef M_CTYPE_H
 #define M_CTYPE_H
 #include <ctype.h>              /* isalpha, toupper */
@@ -57,9 +52,8 @@
 
 /* The following 3 functions return the new size of the arrays or structs.  */
 int findSpacings( char *str, int *dist );
-int factor( int *factors, int *spacings, int spacingsArraySize );
+int factor( int *factors, int *spacings, size_t spacingsArraySize );
 int countOccurrences( struct occurrences *occur, int *factors,
-                      int factorsArraySize );
-int *getKeyLens( struct occurrences *occur, int len );
-char *getSpacedSubstring( char *str, int factor, int offset );
-void freqAnalysis( char *str, int *keyLens, int len );
+                      size_t factorsArraySize );
+int *getKeyLens( struct occurrences *occur, size_t len );
+void freqAnalysis( char *str, int *keyLens, size_t len );

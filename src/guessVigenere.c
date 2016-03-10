@@ -27,6 +27,9 @@
 #include "guessVigenere.h"
 #endif
 
+static char *getSpacedSubstring( char *str, int factor, int offset );
+static float *getFreqs(char *str);
+
 
 /* Function that finds the distances between at least couples repeating
  * consecutive characters in the input string str. The result is saved into
@@ -66,7 +69,7 @@ int findSpacings( char *str, int *spacings )
 
 /* spacings is a subset of factors.  */
 /* This function is awful but it can be changed with a more efficient one.  */
-int factor( int *factors, int *spacings, int spacingsArraySize )
+int factor( int *factors, int *spacings, size_t spacingsArraySize )
 {
 
     int i = 0, j = 0, k = 0;
@@ -75,7 +78,7 @@ int factor( int *factors, int *spacings, int spacingsArraySize )
     /* j = ceil (spacings  [i] / 2) avoid iterating half the number of
      * numbers. You only need to save the first number before entering the
      * second while loop.  */
-    while ( i < spacingsArraySize ) {
+    while ( i < (int) spacingsArraySize ) {
         j = spacings[i];
         while ( j >= 2 ) {
             if ( ( spacings[i] % j ) == 0 ) {
@@ -92,10 +95,10 @@ int factor( int *factors, int *spacings, int spacingsArraySize )
 }
 
 int countOccurrences( struct occurrences *occur, int *factors,
-                      int factorsArraySize )
+                      size_t factorsArraySize )
 {
 
-    int i = 0, k = 0;
+    size_t i = 0, k = 0;
 
 
     /* assert (occur is orderered creasingly).  */
@@ -125,11 +128,11 @@ int countOccurrences( struct occurrences *occur, int *factors,
 }
 
 /* Get significant key lengths (ordered by decreasing score).  */
-int *getKeyLens( struct occurrences *occur, int len )
+int *getKeyLens( struct occurrences *occur, size_t len )
 {
 
     int *keyLens;
-    int i = 0;
+    size_t i = 0;
 
 
     keyLens = NULL;
@@ -149,10 +152,11 @@ int *getKeyLens( struct occurrences *occur, int len )
 
 
 /* Get every factor character staring from offset index.  */
-char *getSpacedSubstring( char *str, int factor, int offset )
+static char *getSpacedSubstring( char *str, int factor, int offset )
 {
 
-    int i = 0, step, strLen = strlen( str );
+    int i = 0, step;
+    size_t strLen = strlen( str );
     char *spacedStr;
 
 
@@ -166,7 +170,7 @@ char *getSpacedSubstring( char *str, int factor, int offset )
 
     step = offset + ( factor * i );
 
-    while ( step < strLen ) {
+    while ( step < (int) strLen ) {
         spacedStr[i] = str[step];
         i++;
         step = offset + ( factor * i );
@@ -197,7 +201,6 @@ void getFreqs(float *strScores)
 }
  */
 
-/* TODO  */
 /* Given an input string str, get the frequency of each letter
  * (ALPHABET_NUMS) like this:
  * #ofLetterOccurrences / strLen)
@@ -205,26 +208,61 @@ void getFreqs(float *strScores)
  * Call getFreqs(float *strScores)
  * Repeat this for all ALPHABET_NUMS alphabets.
  */
-/* void getFreqs(char *str)*/
+static float *getFreqs(char *str)
+{
+
+    int strLen = strlen (str), i = 0, j = 0;
+    float *strScores;
+    char letter;
 
 
-void freqAnalysis( char *str, int *keyLens, int len )
+    strScores = NULL;
+    if ( ( strScores =
+           calloc( ALPHABET_NUMS, sizeof( float ) ) ) == NULL )
+        exit( EXIT_FAILURE );
+
+    while (i < ALPHABET_NUMS) {
+        letter = 'A' + (char) i;
+        j = 0;
+        while (str[j] != '\0') {
+            if (str[j] == letter)
+                strScores[i]++;
+            j++;
+        }
+        strScores[i] /= strLen;
+        i++;
+    }
+
+    return strScores;
+
+}
+
+
+void freqAnalysis( char *str, int *keyLens, size_t len )
 {
 
     int i = 0, offset = 0;
     char *tmpStr;
+    float *tmpStrScores;
 
+
+    int j = 0;
 
     tmpStr = NULL;
+    tmpStrScores = NULL;
 
-    while ( i < len ) {
+    while ( i < (int) len ) {
         /* Get every keyLens[i] letter (starting from the jth letter) from str
          * then do frequency analysis.  */
         offset = 0;
         while ( offset < keyLens[i] && keyLens[i] != 0) {
             tmpStr = getSpacedSubstring( str, keyLens[i], offset );
             printf( "%s\n", tmpStr );
-/*            getFreqs (tmpStr)*/
+            tmpStrScores = getFreqs (tmpStr);
+            for (j = 0; j < 26; j++)
+                printf ("%f\n", tmpStrScores[j]);
+
+
             offset++;
         }
 

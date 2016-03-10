@@ -45,8 +45,10 @@
 
 #ifndef M_UNISTD_H
 #define M_UNISTD_H
-#include <unistd.h>             /* getopt */
+#include <getopt.h>
 #endif
+/*#include <unistd.h>*/             /* getopt */
+
 
 #ifndef M_CTYPE_H
 #define M_CTYPE_H
@@ -63,19 +65,10 @@
 #include <stdlib.h>             /* malloc, free */
 #endif
 
-/* Program constants.  */
-#define PRG_NAME "fcvc"
-#define REPO_NAME "fast-caesar-vigenere-cipher"
-
-/* Numeric constants.  */
-#define ALPHABET_NUMS 26
-#define LETTER_OFFSET 65
-
-
 /* Function/procedure prototypes.  */
 /* Added to adhere to ANSI standard to avoid using getopt.h */
 extern int getopt( int, char *const *, const char * );
-void parseArgs( int *argc, char **argv );
-void crackCaesar( char *inputString );
-void crackVigenere( char *inputString );
-void prepareStrings( char *str, char *key );
+static void parseArgs( size_t *argc, char **argv );
+static void crackCaesar( char *inputString );
+static void crackVigenere( char *inputString );
+static void prepareStrings( char *str, char *key );

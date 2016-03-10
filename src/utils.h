@@ -32,11 +32,6 @@
 #include <stdio.h>              /* io functions */
 #endif
 
-#ifndef M_UNISTD_H
-#define M_UNISTD_H
-#include <unistd.h>             /* getopt */
-#endif
-
 #ifndef M_CTYPE_H
 #define M_CTYPE_H
 #include <ctype.h>              /* isalpha, toupper */
@@ -54,12 +49,10 @@
 
 
 /* Function/procedure prototypes.  */
-int compareIntegers( const void *a, const void *b );
-void orderArray( int *array, int len );
-int compareOccurrencesIntegers( const void *a, const void *b );
-void orderStruct( struct occurrences *occur, int len );
+void orderArray( int *array, size_t len );
+void orderStruct( struct occurrences *occur, size_t len );
 void help( void );
 void helpAndExit( void );
-void checkArgc( int keySet, int *argc, int numElts );
+void checkArgc( int keySet, size_t *argc, size_t numElts );
 void toUpper( char *str, char *key, int *keyIsNotAlpha );
-void trimArray( int *array, int len );
+void trimArray( int *array, size_t len );

@@ -27,8 +27,11 @@
 #include "utils.h"
 #endif
 
+static int compareIntegers( const void *a, const void *b );
+static int compareOccurrencesIntegers( const void *a, const void *b );
 
-int compareIntegers( const void *a, const void *b )
+
+static int compareIntegers( const void *a, const void *b )
 {
 
     const int *da = ( const int * ) a;
@@ -38,7 +41,7 @@ int compareIntegers( const void *a, const void *b )
 
 }
 
-void orderArray( int *array, int len )
+void orderArray( int *array, size_t len )
 {
 
     qsort( array, len, sizeof( int ), compareIntegers );
@@ -47,7 +50,7 @@ void orderArray( int *array, int len )
 
 }
 
-int compareOccurrencesIntegers( const void *a, const void *b )
+static int compareOccurrencesIntegers( const void *a, const void *b )
 {
 
     const struct occurrences *oc1 = ( const struct occurrences * ) a;
@@ -57,7 +60,7 @@ int compareOccurrencesIntegers( const void *a, const void *b )
 
 }
 
-void orderStruct( struct occurrences *occur, int len )
+void orderStruct( struct occurrences *occur, size_t len )
 {
 
     qsort( occur, len, sizeof( struct occurrences ),
@@ -67,7 +70,7 @@ void orderStruct( struct occurrences *occur, int len )
 
 }
 
-void checkArgc( int keySet, int *argc, int numElts )
+void checkArgc( int keySet, size_t *argc, size_t numElts )
 {
 
     if ( *argc != numElts )
@@ -156,7 +159,7 @@ void toUpper( char *str, char *key, int *keyIsNotAlpha )
  * entirely used, it must be reallocated both to avoid zeros in that array, and
  * also to free space.  */
 /* The same works for factors array.  */
-void trimArray( int *array, int len )
+void trimArray( int *array, size_t len )
 {
 
     int *tmp;

@@ -28,6 +28,8 @@
 #include "core.h"
 #endif
 
+static char *transform( char action, char *letter, char *alphabet );
+
 
 /* Low level common crypt functions.  */
 
