@@ -47,7 +47,7 @@
 #define M_GETOPT_H
 #include <getopt.h>
 #endif
-/*#include <unistd.h>*/             /* getopt */
+                                                           /*#include <unistd.h> *//* getopt */
 
 
 #ifndef M_CTYPE_H

@@ -61,7 +61,7 @@ int main( int argc, char **argv )
      *      -v = decipher a vigenere input text.
      *
      */
-    parseArgs( (size_t) argc, argv );
+    parseArgs( ( size_t ) argc, argv );
 
     exit( EXIT_SUCCESS );
 
@@ -83,7 +83,7 @@ void parseArgs( size_t argc, char **argv )
                       optionsString ) ) != -1 ) {
 
         switch ( c ) {
-        /* 3 or 5 arguments are possible.  */
+            /* 3 or 5 arguments are possible.  */
         case 'a':
             checkArgc( 'a', argc, 3 );
             crackCaesar( optarg );
@@ -159,21 +159,21 @@ void crackCaesar( char *inputString )
         exit( EXIT_FAILURE );
 
     toUpper( str, key, &dummy );
-    key[0] = 'A' + (char) 0;
+    key[0] = 'A' + ( char ) 0;
     key[1] = '\0';
 
     /* In the first loop: str = str - 'A' which is like: str = str - 0
      * Then: str = str - 1. */
     for ( i = 0; i < ALPHABET_NUMS; i++ ) {
         /* Print the current alphabet number.  */
-        fprintf( stdout, "%d\t", (int) i + 1 );
+        fprintf( stdout, "%d\t", ( int ) i + 1 );
 
         /* str = str - key.  */
         work( 'd', str, key );
 
         /* Go to the next alphabet.
          * str = str - 1.  */
-        key[0] = 'A' + (char) 1;
+        key[0] = 'A' + ( char ) 1;
     }
 
     free( str );
@@ -252,7 +252,7 @@ void crackVigenere( char *cryptogram )
         i++;
     }
 
-    free ( keyLens );
+    free( keyLens );
 
     return;
 

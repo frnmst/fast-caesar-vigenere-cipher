@@ -44,6 +44,47 @@ struct occurrences {
 
 /* TODO  */
 struct languageFreq {
-    char language[2]; /* ISO code.  */
+    char language[3]; /* ISO 639-1 code.  */
     float score[ALPHABET_NUMS];
+};
+
+
+/* Scores of each letter from A to Z.
+ * Data adapted from Wikipedia at:
+ * https://en.wikipedia.org/wiki/Letter_frequency
+ * (CC BY-SA 3.0)
+ * The original data was expressed with percentages while here is divided by
+ * 100.
+ */
+static const struct languageFreq lF[] = { \
+    { "en", { \
+/* A */     0.0867, \
+/* B */     0.01492, \
+/* C */     0.02782, \
+/* D */     0.04253, \
+/* E */     0.12702, \
+/* F */     0.02228, \
+/* G */     0.02015, \
+/* H */     0.06094, \
+/* I */     0.06966, \
+/* J */     0.00153, \
+/* K */     0.00772, \
+/* L */     0.04025, \
+/* M */     0.02406, \
+/* N */     0.06749, \
+/* O */     0.07507, \
+/* P */     0.01929, \
+/* Q */     0.00095, \
+/* R */     0.05987, \
+/* S */     0.06327, \
+/* T */     0.09056, \
+/* U */     0.02758, \
+/* V */     0.0978, \
+/* W */     0.02361, \
+/* X */     0.00150, \
+/* Y */     0.01974, \
+/* Z */     0.00074 } },
+    { "it", { \
+            0.5, \
+            0.5 } },
 };

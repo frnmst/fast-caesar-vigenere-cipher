@@ -28,8 +28,8 @@
 #endif
 
 static char *getSpacedSubstring( char *str, int factor, int offset );
-static float *getFreqs(char *str);
-static char *getShiftedStr (char *str, char alphabet);
+static float *getFreqs( char *str );
+static char *getShiftedStr( char *str, char alphabet );
 
 /* Function that finds the distances between at least couples repeating
  * consecutive characters in the input string str. The result is saved into
@@ -94,8 +94,8 @@ size_t factor( int *factors, int *spacings, size_t spacingsArraySize )
 
 }
 
-size_t countOccurrences( struct occurrences *occur, int *factors,
-                      size_t factorsArraySize )
+size_t countOccurrences( struct occurrences * occur, int *factors,
+                         size_t factorsArraySize )
 {
 
     size_t i = 0, k = 0;
@@ -136,12 +136,13 @@ int *getKeyLens( struct occurrences *occur, size_t len )
 
 
     keyLens = NULL;
-    if ( ( keyLens = calloc( NUMBER_OF_FACTORS_TO_KEEP, sizeof( int ) ) ) == NULL )
+    if ( ( keyLens =
+           calloc( NUMBER_OF_FACTORS_TO_KEEP, sizeof( int ) ) ) == NULL )
         exit( EXIT_FAILURE );
 
     /* Keep up to NUMBER_OF_FACTORS_TO_KEEP key lengths (or factors).
      * Do not overflow with i < len.  */
-    while ( i < NUMBER_OF_FACTORS_TO_KEEP && i < len) {
+    while ( i < NUMBER_OF_FACTORS_TO_KEEP && i < len ) {
         keyLens[i] = occur[len - 1 - i].factor;
         i++;
     }
@@ -165,12 +166,12 @@ static char *getSpacedSubstring( char *str, int factor, int offset )
      * useless character allocated.  */
     spacedStr = NULL;
     if ( ( spacedStr =
-           calloc( ( strLen / factor) + 1, sizeof( char ) ) ) == NULL )
+           calloc( ( strLen / factor ) + 1, sizeof( char ) ) ) == NULL )
         exit( EXIT_FAILURE );
 
     step = offset + ( factor * i );
 
-    while ( step < (int) strLen ) {
+    while ( step < ( int ) strLen ) {
         spacedStr[i] = str[step];
         i++;
         step = offset + ( factor * i );
@@ -212,30 +213,29 @@ void get(float *strScores)
  * Call getFreqs(float *strScores)
  * Repeat this for all ALPHABET_NUMS alphabets.
  */
-static float *getFreqs(char *str)
+static float *getFreqs( char *str )
 {
 
-    int strLen = strlen (str), i = 0, j = 0;
+    int strLen = strlen( str ), i = 0, j = 0;
     float *strScores;
     char letter;
 
 
     strScores = NULL;
-    if ( ( strScores =
-           calloc( ALPHABET_NUMS, sizeof( float ) ) ) == NULL )
+    if ( ( strScores = calloc( ALPHABET_NUMS, sizeof( float ) ) ) == NULL )
         exit( EXIT_FAILURE );
 
     /* Get the frequency of each letter in the string str .  */
-     while (i < ALPHABET_NUMS) {
-         letter = 'A' + (char) i;
-         j = 0;
-         while (str[j] != '\0') {
-             if (str[j] == letter)
-                 strScores[i]++;
-             j++;
-         }
-         strScores[i] /= strLen;
-         i++;
+    while ( i < ALPHABET_NUMS ) {
+        letter = 'A' + ( char ) i;
+        j = 0;
+        while ( str[j] != '\0' ) {
+            if ( str[j] == letter )
+                strScores[i]++;
+            j++;
+        }
+        strScores[i] /= strLen;
+        i++;
     }
 
     return strScores;
@@ -243,7 +243,7 @@ static float *getFreqs(char *str)
 }
 
 /* Caesar shift algorithm for the whole string.  */
-static char *getShiftedStr (char *str, char alphabet)
+static char *getShiftedStr( char *str, char alphabet )
 {
 
     size_t i = 0;
@@ -254,9 +254,10 @@ static char *getShiftedStr (char *str, char alphabet)
     if ( ( tmpStr = strdup( str ) ) == NULL )
         exit( EXIT_FAILURE );
 
-    while (tmpStr [i] != '\0')
-    {
-        tmpStr[i] = ( ( tmpStr[i] - alphabet + ALPHABET_NUMS ) % ALPHABET_NUMS ) + LETTER_OFFSET;
+    while ( tmpStr[i] != '\0' ) {
+        tmpStr[i] =
+            ( ( tmpStr[i] - alphabet + ALPHABET_NUMS ) % ALPHABET_NUMS ) +
+            LETTER_OFFSET;
         i++;
     }
 
@@ -264,7 +265,7 @@ static char *getShiftedStr (char *str, char alphabet)
 
 }
 
-static void callGetFreqs (char *str)
+static void callGetFreqs( char *str )
 {
 
     size_t i = 0, j = 0;
@@ -275,15 +276,16 @@ static void callGetFreqs (char *str)
 
     tmpStr = NULL;
 
-    while (i < ALPHABET_NUMS) {
-        shift = 'A' + (char) i;
-        tmpStr = getShiftedStr (str, shift);
-        strScoresPtr[i] = getFreqs (tmpStr);
+    while ( i < ALPHABET_NUMS ) {
+        shift = 'A' + ( char ) i;
+        tmpStr = getShiftedStr( str, shift );
+        strScoresPtr[i] = getFreqs( tmpStr );
 
-        for (j = 0; j < 26; j++)
-            printf ("%d %c = %f\n", (int) i, (char) j + 65, strScoresPtr[i][j]);
+        for ( j = 0; j < 26; j++ )
+            printf( "%d %c = %f\n", ( int ) i, ( char ) j + 65,
+                    strScoresPtr[i][j] );
 
-        free (tmpStr);
+        free( tmpStr );
         i++;
     }
 
@@ -305,10 +307,10 @@ void freqAnalysis( char *str, int *keyLens, size_t len )
         /* Get every keyLens[i] letter (starting from the jth letter) from str
          * then do frequency analysis.  */
         offset = 0;
-        while ( offset < keyLens[i] && keyLens[i] != 0) {
+        while ( offset < keyLens[i] && keyLens[i] != 0 ) {
             tmpStr = getSpacedSubstring( str, keyLens[i], offset );
             printf( "%s\n", tmpStr );
-            callGetFreqs (tmpStr);
+            callGetFreqs( tmpStr );
 
             offset++;
         }

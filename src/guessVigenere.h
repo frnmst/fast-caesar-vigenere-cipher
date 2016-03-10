@@ -54,6 +54,6 @@
 size_t findSpacings( char *str, int *dist );
 size_t factor( int *factors, int *spacings, size_t spacingsArraySize );
 size_t countOccurrences( struct occurrences *occur, int *factors,
-                      size_t factorsArraySize );
+                         size_t factorsArraySize );
 int *getKeyLens( struct occurrences *occur, size_t len );
 void freqAnalysis( char *str, int *keyLens, size_t len );
