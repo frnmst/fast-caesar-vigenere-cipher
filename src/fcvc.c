@@ -61,13 +61,13 @@ int main( int argc, char **argv )
      *      -v = decipher a vigenere input text.
      *
      */
-    parseArgs( (size_t *) &argc, argv );
+    parseArgs( (size_t) argc, argv );
 
     exit( EXIT_SUCCESS );
 
 }
 
-void parseArgs( size_t *argc, char **argv )
+void parseArgs( size_t argc, char **argv )
 {
 
     int c, keySet = 0;
@@ -79,7 +79,7 @@ void parseArgs( size_t *argc, char **argv )
 
     /* Input argument parsing.  */
     while ( ( c =
-              getopt( *argc, ( char *const * ) argv,
+              getopt( argc, ( char *const * ) argv,
                       optionsString ) ) != -1 ) {
 
         switch ( c ) {

@@ -53,6 +53,6 @@ void orderArray( int *array, size_t len );
 void orderStruct( struct occurrences *occur, size_t len );
 void help( void );
 void helpAndExit( void );
-void checkArgc( int keySet, size_t *argc, size_t numElts );
+void checkArgc( int keySet, size_t argc, size_t numElts );
 void toUpper( char *str, char *key, int *keyIsNotAlpha );
 void trimArray( int *array, size_t len );

@@ -70,10 +70,10 @@ void orderStruct( struct occurrences *occur, size_t len )
 
 }
 
-void checkArgc( int keySet, size_t *argc, size_t numElts )
+void checkArgc( int keySet, size_t argc, size_t numElts )
 {
 
-    if ( *argc != numElts )
+    if ( argc != numElts )
         helpAndExit(  );
     if ( keySet != 1 && keySet != 'a' )
         helpAndExit(  );

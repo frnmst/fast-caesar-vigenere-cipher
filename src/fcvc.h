@@ -43,8 +43,8 @@
 #include <stdio.h>              /* io functions */
 #endif
 
-#ifndef M_UNISTD_H
-#define M_UNISTD_H
+#ifndef M_GETOPT_H
+#define M_GETOPT_H
 #include <getopt.h>
 #endif
 /*#include <unistd.h>*/             /* getopt */
@@ -68,7 +68,7 @@
 /* Function/procedure prototypes.  */
 /* Added to adhere to ANSI standard to avoid using getopt.h */
 extern int getopt( int, char *const *, const char * );
-static void parseArgs( size_t *argc, char **argv );
+static void parseArgs( size_t argc, char **argv );
 static void crackCaesar( char *inputString );
 static void crackVigenere( char *inputString );
 static void prepareStrings( char *str, char *key );
