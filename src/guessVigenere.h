@@ -47,6 +47,11 @@
 #include <stdlib.h>             /* malloc, free */
 #endif
 
+#ifndef M_MATH_H
+#define M_MATH_H
+#include <math.h>               /* malloc, free */
+#endif
+
 
 /* Function/procedure prototypes.  */
 

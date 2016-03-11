@@ -30,6 +30,7 @@ BIN_DIR = /usr/bin
 INSTALL = /usr/bin/install
 
 CFLAGS = -Wall -Wextra -Wpedantic -Werror -march=native -O0
+LIBS = -lm
 CSTANDARD = -std=c90
 MACRO_REQ = -D_DEFAULT_SOURCE
 
@@ -53,8 +54,8 @@ all : link install clean
 # executables linking
 link : $(PRG_OBJFILES) *.h
 	@echo "Compiling ..."
-	@echo "$(CC) -o $(PRG_NAME) $(CFLAGS) $(CSTANDARD) $(MACRO_REQ)"
-	@$(CC) $(CFLAGS) $(CSTANDARD) $(MACRO_REQ) $(PRG_OBJFILES) -o $(PRG_NAME)
+	@echo "$(CC) -o $(PRG_NAME) $(CFLAGS) $(LIBS) $(CSTANDARD) $(MACRO_REQ)"
+	@$(CC) $(CFLAGS) $(LIBS) $(CSTANDARD) $(MACRO_REQ) $(PRG_OBJFILES) -o $(PRG_NAME)
 	@echo "Compiling terminated."
 
 # 611 permissions

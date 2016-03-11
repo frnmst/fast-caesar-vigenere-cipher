@@ -30,6 +30,7 @@
 static char *getSpacedSubstring( char *str, int factor, int offset );
 static float *getFreqs( char *str );
 static char *getShiftedStr( char *str, char alphabet );
+static int *getLangsIds( float *strScore );
 
 /* Function that finds the distances between at least couples repeating
  * consecutive characters in the input string str. The result is saved into
@@ -182,29 +183,37 @@ static char *getSpacedSubstring( char *str, int factor, int offset )
 }
 
 
-/* Compare langs*/
-/*
-void get(float *strScores)
+/* Compare langs and get languages.  */
+static int *getLangsIds( float *strScore )
 {
 
-    size_t i = 0, j = 0;
+    size_t i = 0, j = 0, k = 0;
+    int *langs;
 
 
-    while (i < TOTAL_LANGS)
-    {
-        while (j < ALPHABET_NUMS)
-        {
-            if (abs (strScore [i] - languageFreq[j].score[i]) < FREQ_TOL)
-                i++;
-            else
-                Break.
-                j = ALPHABET_NUMS;
+    langs = NULL;
+
+    if ( ( langs = calloc( TOTAL_LANGS + 2, sizeof( int ) ) ) == NULL )
+        exit( EXIT_FAILURE );
+
+
+    while ( i < TOTAL_LANGS ) {
+        j = 0;
+        while ( j < ALPHABET_NUMS
+                && fabsf( strScore[j] - lF[i].score[j] ) < FREQ_TOL )
+            j++;
+        /* If every letter is inside tolerance, save it into langs.  */
+        if ( j == ALPHABET_NUMS ) {
+            langs[k] = ( int ) i + 1;
+            k++;
         }
-        if (i == ALPHABET_NUMS)
-            
+        i++;
     }
+
+    return langs;
+
 }
-*/
+
 
 /* Given an input string str, get the frequency of each letter
  * (ALPHABET_NUMS) like this:
@@ -268,26 +277,42 @@ static char *getShiftedStr( char *str, char alphabet )
 static void callGetFreqs( char *str )
 {
 
-    size_t i = 0, j = 0;
+    size_t i = 0;
     char shift;
     char *tmpStr;
-    float *strScoresPtr[ALPHABET_NUMS];
+    int *langsIds;
+    float *strScores;
+
+    size_t j = 0;
 
 
     tmpStr = NULL;
+    langsIds = NULL;
 
     while ( i < ALPHABET_NUMS ) {
         shift = 'A' + ( char ) i;
         tmpStr = getShiftedStr( str, shift );
-        strScoresPtr[i] = getFreqs( tmpStr );
+        strScores = getFreqs( tmpStr );
+        langsIds = getLangsIds( strScores );
 
-        for ( j = 0; j < 26; j++ )
-            printf( "%d %c = %f\n", ( int ) i, ( char ) j + 65,
-                    strScoresPtr[i][j] );
+        j = 0;
+        while ( langsIds[j] != 0 ) {
+            /* Save letter offset + i somewhere and return all of them as char*.  */
+            printf( "lang = %s, key = %c\n", lF[langsIds[j - 1]].language,
+                    ( char ) LETTER_OFFSET + ( char ) i );
+            j++;
+        }
 
+        free( langsIds );
+        free( strScores );
         free( tmpStr );
         i++;
     }
+
+/*        for ( j = 0; j < 26; j++ )
+            printf( "%d %c = %f\n", ( int ) i, ( char ) j + 65,
+                    strScoresPtr[i][j] );
+*/
 
     return;
 
@@ -311,6 +336,7 @@ void freqAnalysis( char *str, int *keyLens, size_t len )
             tmpStr = getSpacedSubstring( str, keyLens[i], offset );
             printf( "%s\n", tmpStr );
             callGetFreqs( tmpStr );
+            /* Test all keys... TODO */
 
             offset++;
         }
