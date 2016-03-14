@@ -1,6 +1,6 @@
 fast-caesar-vigenere-cipher
 ===========================
-An ANSI C, fast and efficient implementation of Caesar and Vigenère cipher.
+An ANSI C89, fast and efficient implementation of Caesar and Vigenère cipher.
 
 ## Compile
 `$ cd src && make`

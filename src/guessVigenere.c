@@ -32,6 +32,7 @@ static float *getFreqs( char *str );
 static char *getShiftedStr( char *str, char alphabet );
 static int *getLangsIds( float *strScore );
 
+
 /* Function that finds the distances between at least couples repeating
  * consecutive characters in the input string str. The result is saved into
  * the integer array string.  */
@@ -79,7 +80,7 @@ size_t factor( int *factors, int *spacings, size_t spacingsArraySize )
     /* j = ceil (spacings  [i] / 2) avoid iterating half the number of
      * numbers. You only need to save the first number before entering the
      * second while loop.  */
-    while ( i < spacingsArraySize ) {
+    for ( i = 0; i < spacingsArraySize; i++ ) {
         j = spacings[i];
         while ( j >= 2 ) {
             if ( ( spacings[i] % j ) == 0 ) {
@@ -88,7 +89,6 @@ size_t factor( int *factors, int *spacings, size_t spacingsArraySize )
             }
             j--;
         }
-        i++;
     }
 
     return k;
@@ -108,8 +108,7 @@ size_t countOccurrences( struct occurrences * occur, int *factors,
     occur[0].factor = factors[0];
     occur[0].count = 1;
 
-    i = 1;
-    while ( i < factorsArraySize ) {
+    for ( i = 1; i < factorsArraySize; i++ ) {
         /* Current factor == previous  */
         if ( factors[i] == factors[i - 1] )
             /* Increase occurence counter.  */
@@ -120,7 +119,6 @@ size_t countOccurrences( struct occurrences * occur, int *factors,
             occur[k].factor = factors[i];
             occur[k].count = 1;
         }
-        i++;
     }
 
 
@@ -136,7 +134,6 @@ int *getKeyLens( struct occurrences *occur, size_t len )
     size_t i = 0;
 
 
-    keyLens = NULL;
     if ( ( keyLens =
            calloc( NUMBER_OF_FACTORS_TO_KEEP, sizeof( int ) ) ) == NULL )
         exit( EXIT_FAILURE );
@@ -153,29 +150,29 @@ int *getKeyLens( struct occurrences *occur, size_t len )
 }
 
 
-/* Get every factor character staring from offset index.  */
+/* Get every character, each one distant factor from each other, staring
+ * from offset index.  */
 static char *getSpacedSubstring( char *str, int factor, int offset )
 {
 
-    int i = 0, step;
-    size_t strLen = strlen( str );
+    int step;
+    size_t i, strLen = strlen( str );
     char *spacedStr;
 
 
     /* (strLen / factor ) + 1 is the size of spacedStr. +1 is used to avoid
      * problems concerning rounding, so in the worst case we will get a
      * useless character allocated.  */
-    spacedStr = NULL;
     if ( ( spacedStr =
            calloc( ( strLen / factor ) + 1, sizeof( char ) ) ) == NULL )
         exit( EXIT_FAILURE );
 
+    i = 0;
     step = offset + ( factor * i );
-
     while ( step < ( int ) strLen ) {
         spacedStr[i] = str[step];
         i++;
-        step = offset + ( factor * i );
+        step = offset + ( factor * (int) i );
     }
 
     return spacedStr;
@@ -183,31 +180,106 @@ static char *getSpacedSubstring( char *str, int factor, int offset )
 }
 
 
-/* Compare langs and get languages.  */
+static char *getKeyLetters (int *langsIds, char alphabet)
+{
+
+    size_t i;
+    char *keyLetters;
+
+
+    if ( ( keyLetters =
+       calloc( TOTAL_LANGS, sizeof( char ) ) ) == NULL )
+          exit( EXIT_FAILURE );
+
+    /* TO DO better  */
+    i = 0;
+    while ( langsIds[i] != -1 && i < TOTAL_LANGS) {
+        keyLetters[i] = alphabet;
+        i++;
+    }
+
+
+    return keyLetters;
+
+}
+
+/* Calculate kolmogorov quantile using the formula which can be found at:
+ * http://www.mathematik.uni-kl.de/~schwaar/Exercises/Tabellen/table_kolmogorov.pdf
+ */
+static float kolmogorovQuantile( void )
+{
+
+    float quantile, alpha;
+
+    /* Alpha can be any value between 0 and 1. To get more accurate results
+     * (by avoiding false positive, a high value of alpha is reccomended. */
+    alpha = 0.9999;
+    /* Even though the formula is for n > 35, it should be ok for these cases.  */
+    quantile = (sqrtf (-0.5 * logf( alpha / 2))) /(sqrtf (ALPHABET_NUMS));
+
+    return quantile;
+
+}
+
+/* Input size of both arrays is ALPHABET_NUMS.  */
+static float maxDiff(float *strScore, const float *langScore)
+{
+
+    float diff, maximum, *diffArray;
+    size_t i, maxInd;
+
+
+    if ( ( diffArray = malloc( ALPHABET_NUMS * sizeof( float ) ) ) == NULL )
+        exit( EXIT_FAILURE );
+
+    for (i = 0; i < ALPHABET_NUMS; i++)
+        diffArray [i] = fabsf( strScore[i] - langScore[i]);
+
+
+    /* maxInd = maxFloatIndex (diffArray); */
+    maximum = diffArray[0];
+    maxInd = 0;
+    for (i = 1; i < ALPHABET_NUMS - 1; i++) {
+        if (diffArray [i] > maximum) {
+            maximum = diffArray [i];
+            maxInd = i;
+        }
+    }
+
+    diff = diffArray[maxInd];
+    free (diffArray);
+
+    return diff;
+
+}
+
+/* Statistical test to know if the string score fits the score of the current
+ * language.  */
+static boolean kolmogorovSmirnovFrequencyTest (float *strScore, int langId)
+{
+
+    return ( maxDiff( strScore, lF[langId].score) < kolmogorovQuantile( ) );
+
+}
+
+/* Compare langs scores with string scores and get languages ids.  */
 static int *getLangsIds( float *strScore )
 {
 
-    size_t i = 0, j = 0, k = 0;
+    size_t i, j = 0;
     int *langs;
 
 
-    langs = NULL;
-
-    if ( ( langs = calloc( TOTAL_LANGS + 2, sizeof( int ) ) ) == NULL )
+    if ( ( langs = calloc( TOTAL_LANGS + 1, sizeof( int ) ) ) == NULL )
         exit( EXIT_FAILURE );
 
-
-    while ( i < TOTAL_LANGS ) {
-        j = 0;
-        while ( j < ALPHABET_NUMS
-                && fabsf( strScore[j] - lF[i].score[j] ) < FREQ_TOL )
+    langs [0] = -1;
+    for ( i = 0; i < TOTAL_LANGS; i++ ) {
+        if (kolmogorovSmirnovFrequencyTest (strScore, (int) i)) {
+            langs[j] = ( int ) i;
+            langs [j + 1] = -1;
             j++;
-        /* If every letter is inside tolerance, save it into langs.  */
-        if ( j == ALPHABET_NUMS ) {
-            langs[k] = ( int ) i + 1;
-            k++;
         }
-        i++;
     }
 
     return langs;
@@ -225,26 +297,25 @@ static int *getLangsIds( float *strScore )
 static float *getFreqs( char *str )
 {
 
-    int strLen = strlen( str ), i = 0, j = 0;
+    int strLen = strlen( str ), i, j;
     float *strScores;
     char letter;
 
 
-    strScores = NULL;
     if ( ( strScores = calloc( ALPHABET_NUMS, sizeof( float ) ) ) == NULL )
         exit( EXIT_FAILURE );
 
-    /* Get the frequency of each letter in the string str .  */
-    while ( i < ALPHABET_NUMS ) {
+    /* Get the frequency of each letter in the string str.  */
+    for ( i = 0; i < ALPHABET_NUMS; i++ ) {
         letter = 'A' + ( char ) i;
         j = 0;
+        /* How many occurrences of letter letter are in the string str?  */
         while ( str[j] != '\0' ) {
             if ( str[j] == letter )
                 strScores[i]++;
             j++;
         }
         strScores[i] /= strLen;
-        i++;
     }
 
     return strScores;
@@ -255,93 +326,88 @@ static float *getFreqs( char *str )
 static char *getShiftedStr( char *str, char alphabet )
 {
 
-    size_t i = 0;
-    char *tmpStr;
+    size_t i;
+    char *shiftedStr;
 
 
-    tmpStr = NULL;
-    if ( ( tmpStr = strdup( str ) ) == NULL )
+    if ( ( shiftedStr = strdup( str ) ) == NULL )
         exit( EXIT_FAILURE );
 
-    while ( tmpStr[i] != '\0' ) {
-        tmpStr[i] =
-            ( ( tmpStr[i] - alphabet + ALPHABET_NUMS ) % ALPHABET_NUMS ) +
+    i = 0;
+    while ( shiftedStr[i] != '\0' ) {
+        shiftedStr[i] =
+            ( ( shiftedStr[i] - alphabet + ALPHABET_NUMS ) % ALPHABET_NUMS ) +
             LETTER_OFFSET;
         i++;
     }
 
-    return tmpStr;
+    return shiftedStr;
 
 }
 
-static void callGetFreqs( char *str )
+/*static char *getKeyElements( char *str )*/
+static void getKeyElements( char *str )
 {
 
-    size_t i = 0;
-    char shift;
-    char *tmpStr;
+    size_t i;
+    char alphabet;
+    char *shiftedStr, *keyElements[ALPHABET_NUMS];
     int *langsIds;
     float *strScores;
 
-    size_t j = 0;
 
+    printf ("%s\n", str);
+    for ( i = 0; i < ALPHABET_NUMS; i++ ) {
+        alphabet = 'A' + ( char ) i;
 
-    tmpStr = NULL;
-    langsIds = NULL;
+        /* Get Caesar shift for str.  */
+        shiftedStr = getShiftedStr( str, alphabet );
 
-    while ( i < ALPHABET_NUMS ) {
-        shift = 'A' + ( char ) i;
-        tmpStr = getShiftedStr( str, shift );
-        strScores = getFreqs( tmpStr );
+        /* Calculate frequecy of each letter inside the string str.  */
+        strScores = getFreqs( shiftedStr );
+
+        /* To what possible languages belongs the string.  */
         langsIds = getLangsIds( strScores );
 
-        j = 0;
-        while ( langsIds[j] != 0 ) {
-            /* Save letter offset + i somewhere and return all of them as char*.  */
-            printf( "lang = %s, key = %c\n", lF[langsIds[j - 1]].language,
-                    ( char ) LETTER_OFFSET + ( char ) i );
-            j++;
-        }
+        /* Get string characters.  */
+        keyElements[i] = getKeyLetters ( langsIds, alphabet);
+
+if (keyElements[i][0] != '\0')
+{
+    printf ("\nYES: %c\n", alphabet);
+}
+
 
         free( langsIds );
         free( strScores );
-        free( tmpStr );
-        i++;
+        free( shiftedStr );
     }
 
-/*        for ( j = 0; j < 26; j++ )
-            printf( "%d %c = %f\n", ( int ) i, ( char ) j + 65,
-                    strScoresPtr[i][j] );
-*/
-
     return;
+/*    return keyElements;*/
 
 }
 
 void freqAnalysis( char *str, int *keyLens, size_t len )
 {
 
-    size_t i = 0;
+    size_t i;
     int offset = 0;
-    char *tmpStr;
+    char *spacedStr;
 
 
-    tmpStr = NULL;
-
-    while ( i < len ) {
+    for ( i = 0; i < len; i++ ) {
         /* Get every keyLens[i] letter (starting from the jth letter) from str
          * then do frequency analysis.  */
         offset = 0;
         while ( offset < keyLens[i] && keyLens[i] != 0 ) {
-            tmpStr = getSpacedSubstring( str, keyLens[i], offset );
-            printf( "%s\n", tmpStr );
-            callGetFreqs( tmpStr );
+            spacedStr = getSpacedSubstring( str, keyLens[i], offset );
+            getKeyElements( spacedStr );
+
             /* Test all keys... TODO */
 
             offset++;
         }
-
-        i++;
     }
 
     return;

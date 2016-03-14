@@ -31,10 +31,11 @@
 #define LETTER_OFFSET 65
 
 /* Other defines */
-#define NUMBER_OF_FACTORS_TO_KEEP 3
+#define NUMBER_OF_FACTORS_TO_KEEP 4
 #define TOTAL_LANGS 1
 /* Tolerance must be auto adaptive.  */
-#define FREQ_TOL 0.07
+#define PERCENT_FREQ_TOL 10
+
 
 /* Struct that stores the number of occurrences of each factor.  */
 struct occurrences {
@@ -59,7 +60,7 @@ struct languageFreq {
  */
 static const struct languageFreq lF[] = { \
     { "en", { \
-/* A */     0.0867, \
+/* A */     0.08167, \
 /* B */     0.01492, \
 /* C */     0.02782, \
 /* D */     0.04253, \

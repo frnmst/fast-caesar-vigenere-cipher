@@ -49,9 +49,14 @@
 
 #ifndef M_MATH_H
 #define M_MATH_H
-#include <math.h>               /* malloc, free */
+#include <math.h>
 #endif
 
+
+#define true 1
+#define false 0
+
+typedef int boolean;
 
 /* Function/procedure prototypes.  */
 

@@ -31,7 +31,7 @@ INSTALL = /usr/bin/install
 
 CFLAGS = -Wall -Wextra -Wpedantic -Werror -march=native -O0
 LIBS = -lm
-CSTANDARD = -std=c90
+CSTANDARD = -std=c89
 MACRO_REQ = -D_DEFAULT_SOURCE
 
 PRG_NAME = fcvc
