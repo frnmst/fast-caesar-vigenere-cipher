@@ -189,8 +189,6 @@ void crackVigenere( char *cryptogram )
     int *spacings, *factors, *keyLens;
     struct occurrences *occur;
 
-    int i;
-
 
     str = NULL;
     spacings = NULL;
@@ -245,12 +243,6 @@ void crackVigenere( char *cryptogram )
     free( occur );
 
     freqAnalysis( str, keyLens, NUMBER_OF_FACTORS_TO_KEEP );
-
-    i = 0;
-    while ( i < NUMBER_OF_FACTORS_TO_KEEP ) {
-        printf( "%d ", keyLens[i] );
-        i++;
-    }
 
     free( keyLens );
 

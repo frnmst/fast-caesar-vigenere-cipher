@@ -52,9 +52,11 @@
 #include <math.h>
 #endif
 
+#ifndef M_ASSERT_H
+#define M_ASSERT_H
+#include <assert.h>
+#endif
 
-#define true 1
-#define false 0
 
 typedef int boolean;
 
@@ -65,5 +67,5 @@ size_t findSpacings( char *str, int *dist );
 size_t factor( int *factors, int *spacings, size_t spacingsArraySize );
 size_t countOccurrences( struct occurrences *occur, int *factors,
                          size_t factorsArraySize );
-int *getKeyLens( struct occurrences *occur, size_t len );
-void freqAnalysis( char *str, int *keyLens, size_t len );
+int *getKeyLens( struct occurrences *occur, size_t n );
+void freqAnalysis( char *str, int *keyLens, size_t n );
