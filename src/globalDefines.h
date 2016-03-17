@@ -33,8 +33,6 @@
 /* Other defines */
 #define NUMBER_OF_FACTORS_TO_KEEP 4
 #define TOTAL_LANGS 1
-/* Tolerance must be auto adaptive.  */
-#define PERCENT_FREQ_TOL 10
 
 
 /* Struct that stores the number of occurrences of each factor.  */
@@ -47,7 +45,7 @@ struct occurrences {
 /* TODO  */
 struct languageFreq {
     char language[3]; /* ISO 639-1 code.  */
-    float score[ALPHABET_NUMS];
+    double score[ALPHABET_NUMS];
 };
 
 

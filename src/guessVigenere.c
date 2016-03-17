@@ -27,14 +27,6 @@
 #include "guessVigenere.h"
 #endif
 
-static char *getSpacedSubstring( char *str, int factor, int offset );
-static float *getFreqs( char *str );
-static char *getShiftedStr( char *str, char alphabet );
-static int *getLangsIds( float *strScore );
-static size_t indexMaxFloatArray( float *array, size_t n );
-static float sup( float *strScore, const float *langScore );
-static char **getKeyElements( char *str );
-
 
 /* Function that finds the distances between at least couples repeating
  * consecutive characters in the input string str. The result is saved into
@@ -208,28 +200,12 @@ static char *getKeyLetters( int *langsIds, char alphabet )
 /* Calculate kolmogorov quantile using the formula which can be found at:
  * http://www.mathematik.uni-kl.de/~schwaar/Exercises/Tabellen/table_kolmogorov.pdf
  */
-static float kolmogorovQuantile( void )
+
+
+static size_t indexMaxdoubleArray( double *array, size_t n )
 {
 
-    float quantile, alpha;
-
-    /* Alpha can be any value between 0 and 1. To get more accurate results
-     * (by avoiding false positive, a high value of alpha is reccomended. */
-    alpha = 0.99999;
-    assert( alpha < 1 );
-    /* Even though the formula is for n > 35, it should be ok for these cases.  */
-    /* FIXME: sqrtf and logf are part of ANSI C99.  */
-    quantile =
-        ( sqrtf( -0.5 * logf( alpha / 2 ) ) ) / ( sqrtf( ALPHABET_NUMS ) );
-
-    return quantile;
-
-}
-
-static size_t indexMaxFloatArray( float *array, size_t n )
-{
-
-    float maximum;
+    double maximum;
     size_t i, maxInd;
 
 
@@ -247,22 +223,21 @@ static size_t indexMaxFloatArray( float *array, size_t n )
 }
 
 /* Input size of both arrays is ALPHABET_NUMS.  */
-static float sup( float *strScore, const float *langScore )
+static double sup( double *strScore, const double *langScore )
 {
 
-    float sup, *diffArray;
+    double sup, *diffArray;
     size_t i, maxInd;
 
 
     if ( ( diffArray =
-           malloc( ALPHABET_NUMS * sizeof( float ) ) ) == NULL )
+           malloc( ALPHABET_NUMS * sizeof( double ) ) ) == NULL )
         exit( EXIT_FAILURE );
 
-    /* FIXME: fabs is part of ANSI C99 standard.  */
     for ( i = 0; i < ALPHABET_NUMS; i++ )
-        diffArray[i] = fabsf( strScore[i] - langScore[i] );
+        diffArray[i] = fabs( langScore[i] - strScore[i] );
 
-    maxInd = indexMaxFloatArray( diffArray, ALPHABET_NUMS );
+    maxInd = indexMaxdoubleArray( diffArray, ALPHABET_NUMS );
     sup = diffArray[maxInd];
     free( diffArray );
 
@@ -272,16 +247,17 @@ static float sup( float *strScore, const float *langScore )
 
 /* Statistical test to know if the string score fits the score of the current
  * language.  */
-static boolean kolmogorovSmirnovFrequencyTest( float *strScore,
-                                               size_t langId )
+static boolean kolmogorovSmirnovFrequencyTest( double *strScore,
+                                               size_t langId, double tol )
 {
 
-    return ( sup( strScore, lF[langId].score ) < kolmogorovQuantile(  ) );
+    /* Return true if accepted.  */
+    return ( sup( strScore, lF[langId].score ) <= tol );
 
 }
 
 /* Compare langs scores with string scores and get languages ids.  */
-static int *getLangsIds( float *strScore )
+static int *getLangsIds( double *strScore, double tol )
 {
 
     size_t i, j = 0;
@@ -293,7 +269,7 @@ static int *getLangsIds( float *strScore )
 
     langs[0] = -1;
     for ( i = 0; i < TOTAL_LANGS; i++ ) {
-        if ( kolmogorovSmirnovFrequencyTest( strScore, i ) ) {
+        if ( kolmogorovSmirnovFrequencyTest( strScore, i, tol ) ) {
             langs[j] = ( int ) i;
             langs[j + 1] = -1;
             j++;
@@ -309,18 +285,18 @@ static int *getLangsIds( float *strScore )
  * (ALPHABET_NUMS) like this:
  * #ofLetterOccurrences / strLen)
  * Save the score of each letter in an array.
- * Call getFreqs(float *strScores)
+ * Call getFreqs(double *strScores)
  * Repeat this for all ALPHABET_NUMS alphabets.
  */
-static float *getFreqs( char *str )
+static double *getFreqs( char *str )
 {
 
     int strLen = strlen( str ), i, j;
-    float *strScores;
+    double *strScores;
     char letter;
 
 
-    if ( ( strScores = calloc( ALPHABET_NUMS, sizeof( float ) ) ) == NULL )
+    if ( ( strScores = calloc( ALPHABET_NUMS, sizeof( double ) ) ) == NULL )
         exit( EXIT_FAILURE );
 
     /* Get the frequency of each letter in the string str.  */
@@ -364,22 +340,20 @@ static char *getShiftedStr( char *str, char alphabet )
 }
 
 /*static char *getKeyElements( char *str )*/
-static char **getKeyElements( char *str )
+static char **getKeyElements( char *str, double tol )
 {
 
     size_t i;
     char alphabet;
     char *shiftedStr, **keyElements;
     int *langsIds;
-    float *strScores;
+    double *strScores;
 
 
     if ( ( keyElements =
            calloc( ALPHABET_NUMS, sizeof( char * ) ) ) == NULL )
         exit( EXIT_FAILURE );
 
-
-    printf( "%s\n", str );
     for ( i = 0; i < ALPHABET_NUMS; i++ ) {
         alphabet = 'A' + ( char ) i;
 
@@ -390,7 +364,7 @@ static char **getKeyElements( char *str )
         strScores = getFreqs( shiftedStr );
 
         /* To what possible languages belongs the string.  */
-        langsIds = getLangsIds( strScores );
+        langsIds = getLangsIds( strScores, tol );
 
         /* Get string characters.  */
         keyElements[i] = getKeyLetters( langsIds, alphabet );
@@ -404,12 +378,30 @@ static char **getKeyElements( char *str )
 
 }
 
+static size_t countNumOfStr (char **keyElts)
+{
+
+    size_t nonZero, i = 0;
+
+
+    while (i < ALPHABET_NUMS)
+    {
+        if (keyElts[i][0] != '\0')
+            nonZero ++;
+        i++;
+    }
+
+    return nonZero;
+
+}
+
 void freqAnalysis( char *str, int *keyLens, size_t n )
 {
 
     size_t i, j;
     int offset = 0;
     char *spacedStr, **keyElts;
+    double tol = 0.1;
 
 
     for ( i = 0; i < n; i++ ) {
@@ -421,7 +413,15 @@ void freqAnalysis( char *str, int *keyLens, size_t n )
         offset = 0;
         while ( offset < keyLens[i] && keyLens[i] != 0 ) {
             spacedStr = getSpacedSubstring( str, keyLens[i], offset );
-            keyElts = getKeyElements( spacedStr );
+
+            printf( "%s\n", spacedStr );
+
+            tol = 0.1;
+            do {
+                printf ("\n\ntol = %f\n\n", tol);
+                keyElts = getKeyElements( spacedStr, tol );
+                tol += 0.05;
+            } while ( countNumOfStr (keyElts) < 1);
 
             for ( j = 0; j < ALPHABET_NUMS; j++ )
                 if ( keyElts[j][0] != '\0' )
